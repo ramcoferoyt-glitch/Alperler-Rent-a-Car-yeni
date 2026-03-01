@@ -1,0 +1,82 @@
+
+import { Component, inject } from '@angular/core';
+import { CarService } from '../services/car.service';
+import { UiService } from '../services/ui.service';
+import { CommonModule } from '@angular/common';
+
+@Component({
+  selector: 'app-about',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+    <div class="bg-white font-sans min-h-screen relative z-[60]">
+       
+       <!-- Close Button -->
+       <button (click)="close()" class="fixed top-6 right-6 z-50 bg-slate-900 text-white hover:bg-amber-500 hover:text-slate-900 rounded-full p-3 transition-all duration-300 shadow-lg border border-white/20 group">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+          <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Kapat</span>
+       </button>
+
+       <!-- Header -->
+       <div class="relative bg-slate-900 h-[500px] flex items-center justify-center overflow-hidden">
+          <div class="absolute inset-0">
+            <img src="https://picsum.photos/id/1018/1920/800" alt="Alperler Kurumsal" class="w-full h-full object-cover opacity-30">
+          </div>
+          <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent to-slate-900/90"></div>
+          <div class="relative z-10 text-center px-4 animate-fade-in-up pt-20">
+             <span class="bg-amber-500 text-slate-900 px-4 py-1 rounded-sm text-xs font-bold uppercase tracking-widest mb-6 inline-block shadow-[0_0_15px_rgba(245,158,11,0.6)]">
+                {{ config().companyName }}
+             </span>
+             <h1 class="font-serif text-5xl md:text-7xl font-bold text-slate-900 mb-4 text-white">
+                {{ config().aboutTitle }}
+             </h1>
+          </div>
+       </div>
+
+       <!-- Founding Story -->
+       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-24 relative">
+          <div class="absolute -left-20 top-40 w-40 h-40 bg-amber-100 rounded-full opacity-50 blur-3xl"></div>
+          
+          <h2 class="text-amber-600 font-bold tracking-[0.2em] uppercase text-sm mb-4 text-center">Hakkımızda</h2>
+          
+          <div class="prose prose-lg text-slate-600 leading-relaxed mx-auto text-justify whitespace-pre-line">
+             {{ config().aboutText }}
+          </div>
+       </div>
+
+       <!-- Team Grid -->
+       <div class="bg-slate-50 py-24 border-t border-slate-200">
+          <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+             <div class="text-center mb-16">
+                <h2 class="font-serif text-4xl md:text-5xl font-bold text-slate-900 mb-4">Yönetim ve Operasyon</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">Profesyonel hizmet, aile sıcaklığı.</p>
+             </div>
+
+             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                @for(member of config().team; track member.id) {
+                    <div class="bg-white p-8 rounded-sm shadow-lg border-t-4 border-slate-900 hover:border-amber-500 transition-all duration-300 text-center group">
+                       <div class="w-32 h-32 bg-slate-200 rounded-full mx-auto mb-6 overflow-hidden border-4 border-white shadow-md">
+                          <img [src]="member.image" width="200" height="200" [alt]="member.name" class="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all">
+                       </div>
+                       <h3 class="font-bold text-2xl text-slate-900 font-serif">{{ member.name }}</h3>
+                       <p class="text-amber-600 text-xs uppercase font-bold tracking-widest mb-2">{{ member.role }}</p>
+                       <p class="text-slate-500 text-sm">{{ member.description }}</p>
+                    </div>
+                }
+
+             </div>
+          </div>
+       </div>
+    </div>
+  `
+})
+export class AboutComponent {
+    carService = inject(CarService);
+    uiService = inject(UiService);
+    config = this.carService.getConfig();
+
+    close() {
+        this.uiService.toggleAbout(false);
+    }
+}

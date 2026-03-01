@@ -1,0 +1,99 @@
+
+import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { CarService } from '../../services/car.service';
+import { ToastService } from '../../services/toast.service';
+
+@Component({
+  selector: 'app-admin-reservations',
+  standalone: true,
+  imports: [CommonModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  template: `
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 animate-fade-in">
+        <h1 class="text-3xl font-bold text-slate-900">Rezervasyon Yönetimi</h1>
+        
+        <div class="bg-white p-1 rounded-lg border border-slate-200 shadow-sm flex">
+            <button (click)="filter.set('ALL')" [class]="filter() === 'ALL' ? 'bg-slate-900 text-white shadow' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-md text-sm font-bold transition-all">Tümü</button>
+            <button (click)="filter.set('PENDING')" [class]="filter() === 'PENDING' ? 'bg-amber-500 text-white shadow' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-md text-sm font-bold transition-all">Bekleyenler</button>
+            <button (click)="filter.set('APPROVED')" [class]="filter() === 'APPROVED' ? 'bg-green-600 text-white shadow' : 'text-slate-600 hover:bg-slate-50'" class="px-4 py-2 rounded-md text-sm font-bold transition-all">Onaylananlar</button>
+        </div>
+    </div>
+    
+    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden animate-fade-in">
+       <div class="overflow-x-auto">
+           <table class="w-full text-left whitespace-nowrap">
+              <thead class="bg-slate-900 text-white text-xs uppercase">
+                 <tr>
+                    <th class="px-6 py-4">ID</th>
+                    <th class="px-6 py-4">Müşteri</th>
+                    <th class="px-6 py-4">Telefon</th>
+                    <th class="px-6 py-4">Hizmet</th>
+                    <th class="px-6 py-4">Detay</th>
+                    <th class="px-6 py-4">Tutar</th>
+                    <th class="px-6 py-4">Durum</th>
+                    <th class="px-6 py-4 text-right">İşlemler</th>
+                 </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                 @for (res of filteredReservations(); track res.id) {
+                    <tr class="hover:bg-slate-50 transition-colors">
+                       <td class="px-6 py-4 font-mono text-xs text-slate-500">{{ res.id }}</td>
+                       <td class="px-6 py-4 font-bold text-slate-900">{{ res.customerName }}</td>
+                       <td class="px-6 py-4 text-sm">{{ res.customerPhone }}</td>
+                       <td class="px-6 py-4">
+                          <div class="font-bold">{{ res.itemName }}</div>
+                          <div class="text-xs text-slate-500">{{ res.type }}</div>
+                       </td>
+                       <td class="px-6 py-4 text-sm">
+                          @if(res.days) { {{ res.days }} Gün <br> }
+                          @if(res.startDate) { {{ res.startDate }} / {{ res.endDate }} }
+                       </td>
+                       <td class="px-6 py-4 font-bold text-green-600">{{ res.totalPrice || res.basePrice | number }} ₺</td>
+                       <td class="px-6 py-4">
+                          <span [class]="res.status === 'APPROVED' ? 'bg-green-100 text-green-800' : (res.status === 'REJECTED' ? 'bg-red-100 text-red-800' : 'bg-amber-100 text-amber-800')" class="px-2 py-1 rounded-full text-xs font-bold">
+                             {{ res.status === 'APPROVED' ? 'Onaylandı' : (res.status === 'REJECTED' ? 'Reddedildi' : 'Bekliyor') }}
+                          </span>
+                       </td>
+                       <td class="px-6 py-4 text-right space-x-2">
+                          @if (res.status === 'PENDING') {
+                            <button (click)="updateStatus(res.id!, 'APPROVED')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-bold transition-transform hover:scale-105 shadow">Onayla</button>
+                            <button (click)="updateStatus(res.id!, 'REJECTED')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-bold transition-transform hover:scale-105 shadow">Reddet</button>
+                          } @else {
+                            <span class="text-slate-400 text-xs italic">İşlem tamamlandı</span>
+                          }
+                       </td>
+                    </tr>
+                 } @empty {
+                     <tr><td colspan="8" class="px-6 py-12 text-center text-slate-500">
+                        {{ filter() === 'ALL' ? 'Henüz bir talep bulunmuyor.' : 'Bu kriterde talep yok.' }}
+                     </td></tr>
+                 }
+              </tbody>
+           </table>
+       </div>
+    </div>
+  `
+})
+export class AdminReservationsComponent {
+  carService = inject(CarService);
+  toastService = inject(ToastService);
+  reservations = this.carService.getReservations();
+  
+  filter = signal<'ALL' | 'PENDING' | 'APPROVED'>('ALL');
+
+  filteredReservations = computed(() => {
+     const current = this.reservations();
+     if(this.filter() === 'ALL') return current;
+     return current.filter(r => r.status === this.filter());
+  });
+
+  updateStatus(id: string, status: 'APPROVED' | 'REJECTED') {
+      this.carService.updateReservationStatus(id, status);
+      if (status === 'APPROVED') {
+          this.toastService.show('Rezervasyon onaylandı.', 'success');
+      } else {
+          this.toastService.show('Rezervasyon reddedildi.', 'info');
+      }
+  }
+}
