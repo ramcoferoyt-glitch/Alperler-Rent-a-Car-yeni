@@ -68,8 +68,17 @@ export class LegalComponent implements OnInit {
           this.title.set('Çerez Politikası');
           this.content.set(cfg.cookiesText);
       } else if (type === 'terms') {
-          this.title.set('Kiralama Koşulları');
+          this.title.set('Kullanım Şartları');
           this.content.set(cfg.termsText);
+      } else if (type === 'distance-selling') {
+          this.title.set('Mesafeli Satış Sözleşmesi');
+          this.content.set(cfg.distanceSellingText);
+      } else if (type === 'cancellation') {
+          this.title.set('İade ve İptal Politikası');
+          this.content.set(cfg.cancellationText);
+      } else if (type === 'insurance') {
+          this.title.set('Araç Sigorta ve Sorumluluk Metinleri');
+          this.content.set(cfg.insuranceText);
       }
   }
 }

@@ -21,7 +21,7 @@ import { ToastService } from '../../services/toast.service';
                  <tr>
                     <th class="px-6 py-4">Tarih</th>
                     <th class="px-6 py-4">Ad Soyad</th>
-                    <th class="px-6 py-4">Telefon</th>
+                    <th class="px-6 py-4">İletişim</th>
                     <th class="px-6 py-4">Araç</th>
                     <th class="px-6 py-4">Model/KM</th>
                     <th class="px-6 py-4">Açıklama</th>
@@ -33,7 +33,10 @@ import { ToastService } from '../../services/toast.service';
                     <tr class="hover:bg-slate-50 transition-colors">
                        <td class="px-6 py-4 text-sm text-slate-500">{{ req.date | date:'dd.MM.yyyy' }}</td>
                        <td class="px-6 py-4 font-bold text-slate-900">{{ req.name }}</td>
-                       <td class="px-6 py-4 text-sm font-mono">{{ req.phone }}</td>
+                       <td class="px-6 py-4 text-sm">
+                           <div class="font-mono">{{ req.phone }}</div>
+                           <div class="text-xs text-slate-400">{{ req.email }}</div>
+                       </td>
                        <td class="px-6 py-4 font-bold">{{ req.carBrand }}</td>
                        <td class="px-6 py-4 text-sm">{{ req.modelYear }} / {{ req.km }} KM</td>
                        <td class="px-6 py-4 text-sm text-slate-500 max-w-xs truncate" [title]="req.description">{{ req.description }}</td>

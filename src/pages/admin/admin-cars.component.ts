@@ -365,7 +365,7 @@ export class AdminCarsComponent implements OnInit {
           this.currentCar.image = this.currentCar.images[0];
       } else if (!this.currentCar.image) {
           // Fallback placeholder
-          this.currentCar.image = `https://source.unsplash.com/800x600/?${this.currentCar.brand},car`;
+          this.currentCar.image = `https://picsum.photos/seed/${this.currentCar.brand}/800/600`;
           this.currentCar.images = [this.currentCar.image];
       }
 

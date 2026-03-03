@@ -35,6 +35,9 @@ export interface SiteConfig {
   privacyText: string;
   cookiesText: string;
   termsText: string;
+  distanceSellingText: string;
+  cancellationText: string;
+  insuranceText: string;
 
   // Campaigns Section
   campaignEarlyBooking: string;

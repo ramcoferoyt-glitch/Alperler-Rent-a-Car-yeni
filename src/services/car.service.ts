@@ -66,6 +66,7 @@ export interface PartnerRequest {
   id: number;
   name: string;
   phone: string;
+  email?: string;
   carBrand: string;
   modelYear: number;
   km: number;
@@ -164,126 +165,249 @@ export class CarService {
     kvkkText: `
 # KİŞİSEL VERİLERİN KORUNMASI VE İŞLENMESİ HAKKINDA AYDINLATMA METNİ
 
-Alperler Rent A Car olarak, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, kişisel verilerinizin güvenliği hususuna azami hassasiyet göstermekteyiz.
+**Veri Sorumlusu:** Alperler Rent A Car
+**Adres:** Hakkari Yüksekova Merkez
+**Telefon:** 0537 959 48 51
 
-1. Veri Sorumlusu
-Kişisel verileriniz, veri sorumlusu sıfatıyla Alperler Rent A Car tarafından aşağıda açıklanan kapsamda işlenebilecektir.
+Alperler Rent A Car olarak, 6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca, kişisel verilerinizin güvenliği hususuna azami hassasiyet göstermekteyiz. Bu kapsamda, ürün ve hizmetlerimizden faydalanan kişiler dahil olmak üzere, Şirketimiz ile ilişkili tüm şahıslara ait her türlü kişisel verinin hukuka uygun olarak işlenmesi ve muhafaza edilmesi önceliğimizdir.
 
-2. Kişisel Verilerin İşlenme Amacı
-Toplanan kişisel verileriniz;
-- Araç kiralama hizmetlerinin sunulabilmesi,
-- Rezervasyon işlemlerinin gerçekleştirilmesi,
-- Yasal yükümlülüklerin yerine getirilmesi (Emniyet Genel Müdürlüğü KABİS bildirimi vb.),
-- Müşteri memnuniyetinin artırılması,
-amaçlarıyla işlenmektedir.
+## 1. Kişisel Verilerin Toplanması, İşlenmesi ve İşleme Amaçları
+Kişisel verileriniz, Şirketimiz tarafından sağlanan hizmetlerin doğasına bağlı olarak değişkenlik gösterebilmekle birlikte; otomatik ya da otomatik olmayan yöntemlerle, ofislerimiz, internet sitemiz, sosyal medya mecralarımız, mobil uygulamalarımız ve benzeri vasıtalarla sözlü, yazılı ya da elektronik olarak toplanabilecektir.
 
-3. İşlenen Kişisel Veriler
-- Kimlik Bilgileri (Ad, Soyad, T.C. Kimlik No)
-- İletişim Bilgileri (Telefon, E-posta, Adres)
-- Ehliyet ve Pasaport Bilgileri
-- Finansal Bilgiler (Kredi Kartı Bilgileri - Sadece provizyon ve ödeme için)
+Toplanan kişisel verileriniz (Ad, Soyad, T.C. Kimlik No, Pasaport No, Ehliyet Bilgileri, Adres, Telefon, E-posta, Kredi Kartı Bilgileri, Araç Kiralama Geçmişi, Lokasyon Bilgisi vb.);
+- Şirketimiz tarafından sunulan ürün ve hizmetlerden sizleri faydalandırmak için gerekli çalışmaların iş birimlerimiz tarafından yapılması,
+- Şirketimizin ve Şirketimizle iş ilişkisi içerisinde olan kişilerin hukuki ve ticari güvenliğinin temini (KABİS bildirimleri, trafik cezası yönetimi vb.),
+- Müşteri memnuniyeti aktivitelerinin planlanması ve icrası,
+- Hukuki yükümlülüklerin yerine getirilmesi,
+amaçlarıyla KVKK'nın 5. ve 6. maddelerinde belirtilen kişisel veri işleme şartları ve amaçları dahilinde işlenecektir.
 
-4. Kişisel Verilerin Aktarılması
-Kişisel verileriniz, yasal zorunluluklar (Emniyet, Adli Makamlar) dışında üçüncü kişilerle paylaşılmamaktadır.
+## 2. İşlenen Kişisel Verilerin Kimlere ve Hangi Amaçla Aktarılabileceği
+Toplanan kişisel verileriniz; yukarıda belirtilen amaçların gerçekleştirilmesi doğrultusunda;
+- Emniyet Genel Müdürlüğü (KABİS sistemi gereği yasal zorunluluk),
+- Adli ve idari makamlar (Trafik cezaları, hukuki uyuşmazlıklar vb.),
+- İş ortaklarımız ve tedarikçilerimiz (Sigorta şirketleri, yol yardım hizmeti verenler vb.),
+- Kanunen yetkili kamu kurumları ve özel kişilere,
+KVKK'nın 8. ve 9. maddelerinde belirtilen kişisel veri işleme şartları ve amaçları çerçevesinde aktarılabilecektir.
 
-5. Haklarınız
-KVKK'nın 11. maddesi uyarınca; verilerinizin işlenip işlenmediğini öğrenme, düzeltme talep etme ve silinmesini isteme haklarına sahipsiniz.
+## 3. Kişisel Veri Toplamanın Yöntemi ve Hukuki Sebebi
+Kişisel verileriniz, her türlü sözlü, yazılı ya da elektronik ortamda, yukarıda yer verilen amaçlar doğrultusunda hizmetlerimizin sunulabilmesi ve bu kapsamda Şirketimizin sözleşme ve yasadan doğan mesuliyetlerini eksiksiz ve doğru bir şekilde yerine getirebilmesi gayesi ile edinilir.
+
+## 4. Kişisel Veri Sahibinin Hakları
+KVKK'nın 11. maddesi uyarınca veri sahipleri;
+- Kişisel veri işlenip işlenmediğini öğrenme,
+- Kişisel verileri işlenmişse buna ilişkin bilgi talep etme,
+- Kişisel verilerin işlenme amacını ve bunların amacına uygun kullanılıp kullanılmadığını öğrenme,
+- Yurt içinde veya yurt dışında kişisel verilerin aktarıldığı üçüncü kişileri bilme,
+- Kişisel verilerin eksik veya yanlış işlenmiş olması hâlinde bunların düzeltilmesini isteme,
+- KVKK'nın 7. maddesinde öngörülen şartlar çerçevesinde kişisel verilerin silinmesini veya yok edilmesini isteme haklarına sahiptir.
     `,
     privacyText: `
 # GİZLİLİK POLİTİKASI
 
-Alperler Rent A Car ("Şirket"), müşterilerinin gizliliğine saygı duyar ve verilerini korumayı taahhüt eder.
+**Son Güncelleme:** 01.01.2024
 
-1. Bilgi Toplama
-Sitemizi ziyaret ettiğinizde veya araç kiraladığınızda, hizmet sunmak için gerekli olan temel bilgileri topluyoruz.
+Alperler Rent A Car ("Şirket"), müşterilerinin gizliliğine saygı duyar ve verilerini korumayı taahhüt eder. İşbu Gizlilik Politikası, web sitemizi ziyaret ettiğinizde veya hizmetlerimizi kullandığınızda bilgilerinizin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.
 
-2. Bilgi Kullanımı
-Topladığımız bilgiler, rezervasyonunuzu yönetmek, size destek sağlamak ve hizmet kalitemizi artırmak için kullanılır.
+## 1. Toplanan Bilgiler
+Hizmetlerimizi sunabilmek için aşağıdaki bilgileri toplayabiliriz:
+- **Kimlik Bilgileri:** Ad, soyad, T.C. kimlik numarası, doğum tarihi.
+- **İletişim Bilgileri:** Telefon numarası, e-posta adresi, ikametgah adresi.
+- **Sürücü Bilgileri:** Ehliyet numarası, sınıfı, veriliş tarihi.
+- **Finansal Bilgiler:** Kredi kartı bilgileri (Sadece ödeme işlemi sırasında banka altyapısı üzerinden işlenir, sistemlerimizde saklanmaz).
+- **İşlem Bilgileri:** Kiralama geçmişi, rezervasyon detayları.
 
-3. Güvenlik
-Verileriniz, endüstri standardı güvenlik önlemleri (SSL şifreleme, güvenli sunucular) ile korunmaktadır. Kredi kartı bilgileriniz sistemlerimizde saklanmaz, doğrudan banka altyapısı üzerinden işlenir.
+## 2. Bilgilerin Kullanımı
+Topladığımız bilgiler şu amaçlarla kullanılır:
+- Rezervasyon işlemlerini gerçekleştirmek ve yönetmek.
+- Müşteri hizmetleri desteği sağlamak.
+- Yasal yükümlülükleri yerine getirmek (Örn: Emniyet bildirimleri).
+- Hizmet kalitemizi artırmak ve kişiselleştirilmiş teklifler sunmak.
+- Güvenlik ihlallerini ve dolandırıcılığı önlemek.
 
-4. Üçüncü Taraf Bağlantıları
-Sitemiz, diğer web sitelerine bağlantılar içerebilir. Bu sitelerin gizlilik uygulamalarından sorumlu değiliz.
+## 3. Bilgi Güvenliği
+Verileriniz, yetkisiz erişime, değiştirmeye, ifşaya veya yok edilmeye karşı korunmak amacıyla endüstri standardı güvenlik önlemleri (SSL şifreleme, güvenlik duvarları, güvenli sunucular) ile korunmaktadır.
+
+## 4. Çerezler (Cookies)
+Web sitemiz, kullanıcı deneyimini geliştirmek için çerezler kullanır. Çerezler hakkında detaylı bilgi için Çerez Politikamızı inceleyebilirsiniz.
+
+## 5. Üçüncü Taraflarla Paylaşım
+Bilgileriniz, yasal zorunluluklar dışında veya hizmetin ifası için gerekli olmadıkça (örn: sigorta işlemleri) üçüncü taraflarla paylaşılmaz, satılmaz veya kiralanmaz.
+
+## 6. Değişiklikler
+Şirketimiz, bu Gizlilik Politikasını dilediği zaman güncelleme hakkını saklı tutar. Güncel politika web sitemizde yayınlandığı tarihte yürürlüğe girer.
     `,
     cookiesText: `
 # ÇEREZ (COOKIE) POLİTİKASI
 
-Alperler Rent A Car olarak, web sitemizden en verimli şekilde faydalanabilmeniz ve kullanıcı deneyiminizi geliştirebilmek için çerezler kullanıyoruz.
+Alperler Rent A Car olarak, web sitemizden en verimli şekilde faydalanabilmeniz ve kullanıcı deneyiminizi geliştirebilmek için çerezler kullanıyoruz. Sitemizi kullanarak çerez kullanımını kabul etmiş sayılırsınız.
 
-1. Çerez Nedir?
-Çerezler, ziyaret ettiğiniz web siteleri tarafından tarayıcınız aracılığıyla cihazınıza veya ağ sunucusuna depolanan küçük metin dosyalarıdır.
+## 1. Çerez Nedir?
+Çerezler, ziyaret ettiğiniz web siteleri tarafından tarayıcınız aracılığıyla cihazınıza veya ağ sunucusuna depolanan küçük metin dosyalarıdır. Çerezler, sitenin daha verimli çalışmasını ve kişiselleştirilmiş sayfaların sunulmasını sağlar.
 
-2. Kullanılan Çerez Türleri
-- Zorunlu Çerezler: Sitenin çalışması için gereklidir.
-- Performans Çerezleri: Ziyaretçi sayısını ve trafiği analiz etmemizi sağlar.
-- İşlevsellik Çerezleri: Dil tercihi gibi ayarlarınızı hatırlar.
+## 2. Kullanılan Çerez Türleri
+- **Zorunlu Çerezler:** Web sitesinin düzgün çalışması için gereklidir. Bu çerezler olmadan sitenin bazı bölümleri kullanılamaz.
+- **Performans ve Analiz Çerezleri:** Ziyaretçilerin siteyi nasıl kullandığını analiz etmemize (örn: en çok ziyaret edilen sayfalar) ve performansı artırmamıza yardımcı olur.
+- **İşlevsellik Çerezleri:** Dil tercihleri, kullanıcı adı gibi seçimlerinizi hatırlayarak size daha kişiselleştirilmiş bir deneyim sunar.
+- **Hedefleme/Reklam Çerezleri:** İlgi alanlarınıza uygun içerik ve reklamlar sunmak amacıyla kullanılır.
 
-3. Çerez Yönetimi
-Tarayıcı ayarlarınızdan çerezleri dilediğiniz zaman silebilir veya engelleyebilirsiniz. Ancak bu durumda sitenin bazı fonksiyonları çalışmayabilir.
+## 3. Çerezleri Nasıl Yönetebilirsiniz?
+Çoğu internet tarayıcısı çerezleri otomatik olarak kabul edecek şekilde ayarlanmıştır. Ancak, tarayıcı ayarlarınızı değiştirerek çerezleri engelleyebilir veya silebilirsiniz.
+- **Google Chrome:** Ayarlar > Gizlilik ve Güvenlik > Çerezler ve diğer site verileri
+- **Mozilla Firefox:** Seçenekler > Gizlilik ve Güvenlik > Çerezler ve Site Verileri
+- **Safari:** Tercihler > Gizlilik > Çerezleri ve web sitesi verilerini yönet
+
+Çerezleri devre dışı bırakmanız durumunda web sitemizin bazı özelliklerinin düzgün çalışmayabileceğini unutmayınız.
     `,
     termsText: `
 # ARAÇ KİRALAMA VE KULLANIM KOŞULLARI
 
-Lütfen araç kiralamadan önce aşağıdaki koşulları dikkatlice okuyunuz. Rezervasyon yapan her müşteri bu koşulları kabul etmiş sayılır.
+Lütfen araç kiralamadan önce aşağıdaki koşulları dikkatlice okuyunuz. Rezervasyon yapan her müşteri bu koşulları peşinen kabul etmiş sayılır.
 
-1. EHLİYET VE YAŞ SINIRI
-- Ekonomik grup araçlar için en az 21 yaş ve 2 yıllık ehliyet.
-- Orta grup araçlar için en az 23 yaş ve 3 yıllık ehliyet.
-- Üst grup ve SUV araçlar için en az 25 yaş ve 5 yıllık ehliyet gereklidir.
+## 1. SÜRÜCÜ BELGESİ VE YAŞ SINIRI
+- **Ekonomik Grup:** En az 21 yaş ve 2 yıllık geçerli sürücü belgesi.
+- **Orta Grup:** En az 23 yaş ve 3 yıllık geçerli sürücü belgesi.
+- **Üst Grup ve SUV:** En az 25 yaş ve 5 yıllık geçerli sürücü belgesi gereklidir.
+- Yabancı uyruklu müşterilerimizin pasaport ve uluslararası geçerliliği olan sürücü belgesi ibraz etmeleri zorunludur.
 
-2. KİRALAMA SÜRESİ VE GECİKMELER
-- En az kiralama süresi günlük kiralamalarda 24 saattir.
-- Saatlik kiralamalarda minimum süre 6 saattir.
-- Gecikmelerde her saat için günlük ücretin 1/3'ü, 3 saati aşan gecikmelerde tam gün ücreti tahsil edilir.
-- Uzun süreli kiralamalarda (30 gün ve üzeri) özel fiyatlandırma uygulanır.
+## 2. KİRALAMA SÜRESİ
+- En az kiralama süresi günlük kiralamalarda **24 saattir**.
+- Gecikmelerde her saat için günlük kiralama bedelinin 1/3'ü, 3 saati aşan gecikmelerde ise tam gün ücreti tahsil edilir.
+- Aylık kiralamalar en az 30 gün üzerinden hesaplanır.
 
-3. FİYATA DAHİL OLAN VE OLMAYAN HUSUSLAR
-- Dahil Olanlar: Muafiyetli Kasko, Hırsızlık Sigortası, KDV, 7/24 Yol Yardım.
-- Dahil Olmayanlar: Yakıt, Köprü/Otoyol geçiş ücretleri (HGS/OGS), Trafik cezaları, Ek sürücü, Bebek koltuğu, Vale hizmeti.
+## 3. FİYATA DAHİL OLAN VE OLMAYAN HİZMETLER
+- **Dahil Olanlar:** Muafiyetli Kasko, Zorunlu Trafik Sigortası, Hırsızlık Sigortası (polis raporu şartıyla), KDV, 7/24 Yol Yardım Desteği.
+- **Dahil Olmayanlar:** Yakıt, Köprü ve Otoyol geçiş ücretleri (HGS/OGS), Trafik cezaları, Ek sürücü ücreti, Bebek koltuğu, Navigasyon cihazı, Vale hizmeti, Tek yön ücreti (farklı şehirde teslim).
 
-4. ÖDEME VE DEPOZİTO
+## 4. ÖDEME VE DEPOZİTO (PROVİZYON)
 - Kiralama bedeli araç tesliminde Nakit, Kredi Kartı veya Havale/EFT ile tahsil edilir.
-- Araç grubuna göre değişen tutarlarda depozito (provizyon) uygulanır. Bu tutar, araç iadesinden sonra trafik cezası veya eksik yakıt gibi durumlar kontrol edildikten sonra iade edilir.
+- Araç grubuna göre değişen tutarlarda kredi kartından **depozito (provizyon)** işlemi uygulanır.
+- Depozito, aracın iadesinden sonra trafik cezası, eksik yakıt veya hasar durumu kontrol edildikten sonra en geç 7-14 iş günü içinde iade edilir.
 
-5. SİGORTA VE KASKO (GÜVENCE)
-Tüm araçlarımızda "Muafiyetli Kasko" bulunmaktadır.
-Kaskonun geçerli olması için:
-- Alkol veya uyuşturucu etkisi altında olunmamalıdır.
-- Yasal hız sınırlarına uyulmalıdır.
-- Kaza anında araç yerinden oynatılmadan Polis/Jandarma raporu tutulmalıdır.
-- Rapor tutulmayan hasarlardan kiracı %100 sorumludur.
-- Lastik, cam ve far hasarları standart kasko kapsamı dışındadır (Ek güvence satın alınabilir).
-- Aracın alt kısmının vurulması, döşeme yanıkları ve anahtar kaybı kasko kapsamı dışındadır.
+## 5. SİGORTA VE GÜVENCE KOŞULLARI
+Tüm araçlarımız "Muafiyetli Kasko" ile sigortalanmıştır. Sigortanın geçerli olabilmesi için aşağıdaki şartlara uyulması zorunludur:
+- Kaza anında araç yerinden oynatılmadan **Polis veya Jandarma Raporu** tutulmalıdır. Tutanaksız hasarlardan kiracı tam sorumludur.
+- Sürücünün alkollü veya uyuşturucu etkisi altında olmaması gerekir.
+- Aracın yasal hız sınırları içinde ve trafik kurallarına uygun kullanılması gerekir.
+- Aracın kira sözleşmesinde adı geçen sürücüler dışında kimse tarafından kullanılmaması gerekir.
+- Lastik, cam, far hasarları ve anahtar kaybı standart kasko kapsamı dışındadır (Ek güvence paketi ile kapsama alınabilir).
 
-6. SAATLİK KİRALAMA KOŞULLARI
-- Saatlik kiralama hizmetimiz mevcuttur.
-- Minimum kiralama süresi 6 saattir.
-- 6-12 saat arası kiralamalarda günlük ücretin %60'ı, 12 saat üzeri kiralamalarda tam gün ücreti tahsil edilir.
-- Saatlik kiralamalarda km sınırı uygulanabilir (Örn: 6 saat için 100km).
-
-7. İPTAL VE İADE KOŞULLARI
-- Rezervasyon tarihine 24 saat kala yapılan iptallerde ücretin tamamı iade edilir.
-- 24 saatten az kalan iptallerde 1 günlük kira bedeli kesilir.
-- Araç teslim alındıktan sonra erken iade durumunda, kalan günlerin ücreti iade edilmez.
-
-8. YAKIT POLİTİKASI
-- Araçlar teslim edildiği yakıt seviyesinde iade alınır. 
-- Eksik yakıtla iadelerde yakıt bedeli + %20 hizmet bedeli tahsil edilir.
+## 6. YAKIT POLİTİKASI
+- Araçlar teslim edildiği yakıt seviyesinde iade alınır.
+- Eksik yakıtla iadelerde, eksik yakıt bedeli + %20 hizmet bedeli tahsil edilir.
 - Fazla yakıtla iadelerde ücret iadesi yapılmaz.
 
-9. YURT DIŞINA ÇIKIŞ
-- Kiralanan araçlarla yurt dışına çıkılamaz.
+## 7. TRAFİK CEZALARI
+- Kiralama süresi boyunca oluşan tüm trafik cezaları (HGS, OGS, radar, park vb.) kiracıya aittir.
+- Cezaların kiralama bitiminden sonra tebliğ edilmesi durumunda, ilgili tutar kiracının kredi kartından tahsil edilir.
 
-10. TRAFİK CEZALARI
-- Kiralama süresince oluşan tüm trafik cezaları (HGS, OGS, radar, park vb.) kiracıya aittir.
-- Cezalar, kiralama bitiminden sonra tebliğ edilirse, kiracının kredi kartından tahsil edilir veya yasal yollara başvurulur.
+## 8. YURT DIŞINA ÇIKIŞ
+- Kiralanan araçlarla yurt dışına çıkılması kesinlikle yasaktır.
 
-11. ŞOFÖRLÜ KİRALAMA
-- Şoförlü kiralamalarda yakıt, şoförün konaklama ve yemek giderleri kiracıya aittir (aksi belirtilmedikçe).
-- Şoförün çalışma saatleri günlük maksimum 10 saattir.
+## 9. İPTAL VE DEĞİŞİKLİK
+- Rezervasyon değişiklikleri müsaitlik durumuna göre yapılır.
+- İptal koşulları için "İade ve İptal Politikası" metnini inceleyiniz.
+    `,
+    distanceSellingText: `
+# MESAFELİ SATIŞ SÖZLEŞMESİ
 
-Alperler Rent A Car, önceden haber vermeksizin koşulları değiştirme hakkını saklı tutar.
+## 1. TARAFLAR
+**SATICI (KİRAYA VEREN):**
+Ünvanı: Alperler Rent A Car
+Adres: Hakkari Yüksekova Merkez
+Telefon: 0537 959 48 51
+E-posta: info@alperlerrentacar.com
+
+**ALICI (KİRACI):**
+Adı Soyadı / Ünvanı: [Müşteri Adı]
+Adresi: [Müşteri Adresi]
+Telefon: [Müşteri Telefon]
+E-posta: [Müşteri E-posta]
+
+## 2. SÖZLEŞMENİN KONUSU
+İşbu sözleşmenin konusu, ALICI'nın SATICI'ya ait internet sitesi üzerinden elektronik ortamda siparişini verdiği, nitelikleri ve satış fiyatı belirtilen araç kiralama hizmetinin satışı ve ifası ile ilgili olarak 6502 sayılı Tüketicinin Korunması Hakkında Kanun ve Mesafeli Sözleşmeler Yönetmeliği hükümleri gereğince tarafların hak ve yükümlülüklerinin saptanmasıdır.
+
+## 3. HİZMETİN NİTELİĞİ VE BEDELİ
+Hizmet Türü: Araç Kiralama
+Araç Grubu: [Rezervasyon Yapılan Araç Grubu]
+Kiralama Süresi: [Gün/Saat]
+Teslim Alma Tarihi: [Tarih]
+Teslim Etme Tarihi: [Tarih]
+Toplam Tutar: [Tutar] TL (KDV Dahil)
+
+## 4. GENEL HÜKÜMLER
+4.1. ALICI, internet sitesinde sözleşme konusu hizmetin temel nitelikleri, satış fiyatı ve ödeme şekli ile teslimata ilişkin ön bilgileri okuyup bilgi sahibi olduğunu ve elektronik ortamda gerekli teyidi verdiğini beyan eder.
+4.2. Sözleşme konusu hizmet, yasal 30 günlük süreyi aşmamak koşuluyla her bir hizmet için ALICI'nın yerleşim yerinin uzaklığına bağlı olarak internet sitesinde ön bilgiler içinde açıklanan süre içinde ifa edilir.
+4.3. SATICI, sözleşme konusu hizmetin sağlam, eksiksiz, siparişte belirtilen niteliklere uygun olarak teslim edilmesinden sorumludur.
+4.4. Hizmetin ifası için işbu sözleşmenin elektronik ortamda onaylanmış olması ve bedelinin ödenmiş olması şarttır. Herhangi bir nedenle hizmet bedeli ödenmez veya banka kayıtlarında iptal edilir ise, SATICI hizmetin ifası yükümlülüğünden kurtulmuş kabul edilir.
+
+## 5. CAYMA HAKKI
+ALICI; hizmetin ifasına başlanmadan (aracın teslim saatinden) **24 saat öncesine kadar** hiçbir hukuki ve cezai sorumluluk üstlenmeksizin ve hiçbir gerekçe göstermeksizin sözleşmeden cayma hakkına sahiptir. Cayma hakkının kullanılması için bu süre içinde SATICI'ya faks, e-posta veya telefon ile bildirimde bulunulması şarttır.
+
+Cayma hakkının kullanılamayacağı durumlar:
+- Hizmetin ifasına başlanmış olması (Aracın teslim alınmış olması).
+- ALICI'nın istekleri veya kişisel ihtiyaçları doğrultusunda hazırlanan hizmetler.
+- Belirli bir tarihte veya dönemde yapılması gereken, konaklama, eşya taşıma, araba kiralama, yiyecek-içecek tedariki ve eğlence veya dinlenme amacıyla yapılan boş zamanın değerlendirilmesine ilişkin sözleşmeler (Mesafeli Sözleşmeler Yönetmeliği Madde 15/g uyarınca, ifa tarihi geçmiş veya ifasına başlanmış hizmetlerde cayma hakkı kullanılamaz).
+
+## 6. YETKİLİ MAHKEME
+İşbu sözleşmenin uygulanmasında, Sanayi ve Ticaret Bakanlığınca ilan edilen değere kadar Tüketici Hakem Heyetleri ile ALICI'nın veya SATICI'nın yerleşim yerindeki Tüketici Mahkemeleri yetkilidir.
+    `,
+    cancellationText: `
+# İADE VE İPTAL POLİTİKASI
+
+Alperler Rent A Car olarak, müşteri memnuniyetini ön planda tutan esnek bir iptal politikası uygulamaktayız.
+
+## 1. İPTAL KOŞULLARI
+- **Ücretsiz İptal:** Rezervasyon başlangıç saatine **24 saatten fazla** süre kala yapılan iptal taleplerinde, ödenen tutarın tamamı kesintisiz olarak iade edilir.
+- **Geç İptal:** Rezervasyon başlangıç saatine **24 saatten az** süre kala yapılan iptallerde, 1 günlük kiralama bedeli kesinti yapılarak kalan tutar iade edilir.
+- **Teslim Almama (No-Show):** Araç teslim saatinde teslim alınmazsa ve iptal bildirimi yapılmazsa, rezervasyon iptal edilir ve ücret iadesi yapılmaz.
+- **Mücbir Sebepler:** Doğal afet, salgın hastalık, resmi seyahat yasakları gibi belgelenebilir mücbir sebeplerin varlığı halinde, süre kısıtlaması olmaksızın tam iade yapılır.
+
+## 2. ERKEN İADE
+Aracın rezervasyon bitiş tarihinden önce iade edilmesi durumunda;
+- Kullanılmayan günlerin ücret iadesi yapılmaz. Ancak, kalan bakiye bir sonraki kiralamada kullanılmak üzere "Kredi" olarak müşteri hesabına tanımlanabilir (Şirket inisiyatifindedir).
+
+## 3. İADE SÜRECİ
+- İptal talebiniz onaylandıktan sonra, iade işlemi derhal başlatılır.
+- İadenin hesabınıza veya kredi kartınıza yansıması, bankanızın işlem süreçlerine bağlı olarak **3 ila 7 iş günü** sürebilir.
+- Ödeme kredi kartı ile yapıldıysa iade kredi kartına, havale ile yapıldıysa banka hesabına yapılır.
+
+## 4. REZERVASYON DEĞİŞİKLİĞİ
+- Rezervasyon tarih ve saatlerinde değişiklik yapma talepleri, araç müsaitlik durumuna göre değerlendirilir.
+- Değişiklik sonucunda oluşabilecek fiyat farkları (sezon değişimi, araç grubu değişimi vb.) müşteriden tahsil edilir veya iade edilir.
+    `,
+    insuranceText: `
+# ARAÇ SİGORTA VE SORUMLULUK BİLGİLENDİRMESİ
+
+Alperler Rent A Car'dan kiraladığınız tüm araçlar, yasal zorunluluklara uygun olarak sigortalanmıştır. Ancak, sigortanın geçerli olabilmesi için belirli kurallara uyulması gerekmektedir.
+
+## 1. SİGORTA KAPSAMI (Muafiyetli Kasko)
+Kiralama fiyatlarına dahil olan standart güvence paketimiz şunları kapsar:
+- **CDW (Collision Damage Waiver):** Çarpışma hasarından feragat. Kaza durumunda, hasarın belirli bir limitin (muafiyet) üzerindeki kısmı sigorta tarafından karşılanır.
+- **TP (Theft Protection):** Hırsızlık güvencesi. Aracın çalınması durumunda kiracının sorumluluğunu sınırlar (Aracın anahtarının ve ruhsatının teslim edilmesi şartıyla).
+- **TPL (Third Party Liability):** Üçüncü şahıs mali mesuliyet sigortası. Karşı tarafa verilen maddi ve bedeni zararları yasal limitler dahilinde karşılar.
+
+## 2. SİGORTA KAPSAMI DIŞINDA KALAN DURUMLAR
+Aşağıdaki hallerde sigorta geçersiz sayılır ve hasarın tamamından KİRACI sorumlu tutulur:
+- **Tutanak Tutulmaması:** Kaza anında Polis veya Jandarma raporu tutulmadan aracın yerinden oynatılması.
+- **Alkol ve Madde Kullanımı:** Sürücünün alkollü veya uyuşturucu madde etkisi altında olması.
+- **Yetkisiz Sürücü:** Aracın, kira sözleşmesinde kayıtlı olmayan bir kişi tarafından kullanılması.
+- **Hatalı Kullanım:** Aracın teknik yapısına uygun olmayan arazide kullanılması, aşırı yük taşınması, hız sınırlarının aşılması.
+- **İhmal:** Anahtarın araç üzerinde bırakılması sonucu çalınma, yanlış yakıt doldurulması.
+- **Lastik, Cam, Far (LCF):** Lastik yarılması, cam kırılması, far hasarları standart kasko dışındadır (Ek LCF paketi alınmamışsa).
+- **İç Aksam:** Koltuk yanıkları, döşeme yırtılmaları, aksesuar kırılmaları.
+
+## 3. EK GÜVENCE PAKETLERİ (Opsiyonel)
+Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
+- **Süper Kasko (Full Kasko):** Muafiyet tutarını ortadan kaldırır. Lastik, cam ve far hasarlarını kapsar (Limitler dahilinde).
+- **Mini Hasar Sigortası:** Belirli bir tutara kadar olan küçük hasarlarda (çizik, göçük) polis raporu gerektirmez.
+
+## 4. KAZA DURUMUNDA YAPILMASI GEREKENLER
+1. Sakin olun ve güvenli bir alana geçin.
+2. Aracı yerinden oynatmayın.
+3. Derhal **0537 959 48 51** numaralı hattımızı arayarak bilgi verin.
+4. Çift taraflı kazalarda "Kaza Tespit Tutanağı" doldurun (Karşı tarafın ehliyet, ruhsat ve sigorta poliçesi fotoğraflarını alın).
+5. Yaralanmalı veya tek taraflı kazalarda mutlaka **155 Polis** veya **156 Jandarma**'yı arayarak rapor tutturun.
+6. Olay yeri fotoğraflarını (farklı açılardan) çekin.
     `,
 
     theme: 'light'
@@ -664,6 +788,22 @@ Alperler Rent A Car, önceden haber vermeksizin koşulları değiştirme hakkın
   getSubscribers() { return this._subscribers.asReadonly(); }
   getNotifications() { return this._notifications.asReadonly(); }
 
+  submitPartnerRequest(request: Omit<PartnerRequest, 'id' | 'date'>) {
+      const newRequest: PartnerRequest = {
+          ...request,
+          id: Date.now(),
+          date: new Date()
+      };
+      this._partnerRequests.update(reqs => [newRequest, ...reqs]);
+      localStorage.setItem('db_partnerRequests', JSON.stringify(this._partnerRequests()));
+      return Promise.resolve(newRequest);
+  }
+
+  deletePartnerRequest(id: number) {
+      this._partnerRequests.update(reqs => reqs.filter(r => r.id !== id));
+      localStorage.setItem('db_partnerRequests', JSON.stringify(this._partnerRequests()));
+  }
+
   // --- ADMIN ACTIONS ---
   
   addFeedback(feedback: Omit<Feedback, 'id' | 'date' | 'status'>) {
@@ -717,10 +857,6 @@ Alperler Rent A Car, önceden haber vermeksizin koşulları değiştirme hakkın
       date: new Date()
     };
     this._partnerRequests.update(reqs => [newReq, ...reqs]);
-  }
-
-  deletePartnerRequest(id: number) {
-    this._partnerRequests.update(reqs => reqs.filter(r => r.id !== id));
   }
 
   updateConfig(newConfig: SiteConfig) {

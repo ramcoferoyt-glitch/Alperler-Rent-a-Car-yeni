@@ -12,7 +12,7 @@ export class UiService {
   isContactOpen = signal(false);
   isLegalOpen = signal(false);
   isFeedbackOpen = signal(false);
-  legalType = signal<'kvkk' | 'privacy' | 'cookies' | 'terms'>('terms');
+  legalType = signal<'kvkk' | 'privacy' | 'cookies' | 'terms' | 'distance-selling' | 'cancellation' | 'insurance'>('terms');
 
   // --- LANGUAGE STATE ---
   currentLang = signal<Language>('TR');
@@ -43,7 +43,7 @@ export class UiService {
       }
   }
   
-  openLegal(type: 'kvkk' | 'privacy' | 'cookies' | 'terms') {
+  openLegal(type: 'kvkk' | 'privacy' | 'cookies' | 'terms' | 'distance-selling' | 'cancellation' | 'insurance') {
     this.legalType.set(type);
     this.isLegalOpen.set(true);
     this.isAboutOpen.set(false);

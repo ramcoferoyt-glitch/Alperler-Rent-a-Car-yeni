@@ -55,9 +55,14 @@ export const routes: Routes = [
       { path: 'blog', component: BlogListComponent },
       { path: 'blog/:id', component: BlogDetailComponent },
       { path: 'faq', component: FaqComponent },
+      { path: 'list-your-car', loadComponent: () => import('./pages/list-your-car.component').then(m => m.ListYourCarComponent) },
       { path: 'legal/kvkk', component: LegalComponent, data: { type: 'kvkk', title: 'KVKK Aydınlatma Metni' } },
       { path: 'legal/privacy', component: LegalComponent, data: { type: 'privacy', title: 'Gizlilik Politikası' } },
       { path: 'legal/cookies', component: LegalComponent, data: { type: 'cookies', title: 'Çerez Politikası' } },
+      { path: 'legal/terms', component: LegalComponent, data: { type: 'terms', title: 'Kullanım Şartları' } },
+      { path: 'legal/distance-selling', component: LegalComponent, data: { type: 'distance-selling', title: 'Mesafeli Satış Sözleşmesi' } },
+      { path: 'legal/cancellation', component: LegalComponent, data: { type: 'cancellation', title: 'İade ve İptal Politikası' } },
+      { path: 'legal/insurance', component: LegalComponent, data: { type: 'insurance', title: 'Araç Sigorta ve Sorumluluk Metinleri' } },
     ]
   },
   

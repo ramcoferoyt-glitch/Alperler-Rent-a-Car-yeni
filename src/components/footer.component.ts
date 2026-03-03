@@ -55,6 +55,7 @@ import { UiService } from '../services/ui.service';
               <li><button (click)="openAbout()" class="hover:text-amber-500 transition-colors">Hakkımızda</button></li>
               <li><a routerLink="/fleet" class="hover:text-amber-500 transition-colors">Araç Filosu</a></li>
               <li><a routerLink="/sales" class="hover:text-amber-500 transition-colors">Satılık Araçlar</a></li>
+              <li><a routerLink="/list-your-car" class="hover:text-amber-500 transition-colors">Aracını Kiraya Ver</a></li>
               <li><a routerLink="/blog" class="hover:text-amber-500 transition-colors">Blog</a></li>
             </ul>
           </div>
@@ -63,10 +64,12 @@ import { UiService } from '../services/ui.service';
           <div>
             <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">Yasal</h3>
             <ul class="space-y-3 text-sm">
+              <li><button (click)="openLegal('terms')" class="hover:text-amber-500 transition-colors">Kullanım Şartları</button></li>
+              <li><button (click)="openLegal('distance-selling')" class="hover:text-amber-500 transition-colors">Mesafeli Satış Sözleşmesi</button></li>
+              <li><button (click)="openLegal('cancellation')" class="hover:text-amber-500 transition-colors">İade ve İptal Politikası</button></li>
+              <li><button (click)="openLegal('insurance')" class="hover:text-amber-500 transition-colors">Araç Sigorta ve Sorumluluk</button></li>
               <li><button (click)="openLegal('kvkk')" class="hover:text-amber-500 transition-colors">KVKK Aydınlatma Metni</button></li>
               <li><button (click)="openLegal('privacy')" class="hover:text-amber-500 transition-colors">Gizlilik Politikası</button></li>
-              <li><button (click)="openLegal('cookies')" class="hover:text-amber-500 transition-colors">Çerez Politikası</button></li>
-              <li><button (click)="openLegal('terms')" class="hover:text-amber-500 transition-colors">Kiralama Koşulları</button></li>
               <li><a routerLink="/faq" class="hover:text-amber-500 transition-colors">Sıkça Sorulan Sorular</a></li>
               <!-- Feedback Link -->
               <li><button (click)="openFeedback()" class="text-amber-500 hover:text-amber-400 transition-colors font-medium flex items-center">
@@ -149,7 +152,7 @@ export class FooterComponent {
       this.uiService.toggleContact(true);
   }
 
-  openLegal(type: 'kvkk' | 'privacy' | 'cookies' | 'terms') {
+  openLegal(type: 'kvkk' | 'privacy' | 'cookies' | 'terms' | 'distance-selling' | 'cancellation' | 'insurance') {
       this.uiService.openLegal(type);
   }
 

@@ -315,6 +315,18 @@ import { SiteConfig, TeamMember } from '../../models/site-config.model';
                    <div>
                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Kiralama Sözleşmesi & Şartlar</label>
                        <textarea [(ngModel)]="formConfig.termsText" name="termsText" rows="10" class="w-full p-3 bg-slate-50 border rounded font-mono text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mesafeli Satış Sözleşmesi</label>
+                        <textarea [(ngModel)]="formConfig.distanceSellingText" name="distanceSellingText" rows="10" class="w-full p-3 bg-slate-50 border rounded font-mono text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">İade ve İptal Politikası</label>
+                        <textarea [(ngModel)]="formConfig.cancellationText" name="cancellationText" rows="10" class="w-full p-3 bg-slate-50 border rounded font-mono text-sm"></textarea>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Araç Sigorta ve Sorumluluk Metinleri</label>
+                        <textarea [(ngModel)]="formConfig.insuranceText" name="insuranceText" rows="10" class="w-full p-3 bg-slate-50 border rounded font-mono text-sm"></textarea>
                    </div>
                </div>
            }

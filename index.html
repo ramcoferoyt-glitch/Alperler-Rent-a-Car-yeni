@@ -1,11 +1,38 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <base href="/">
   <meta charset="UTF-8">
+  <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Alperler Rent A Car | Yüksekova'nın Lider Araç Kiralama Şirketi</title>
   
+  <!-- Polyfill for process (Fixes ReferenceError: process is not defined) -->
+  <script>
+    window.process = { env: { NODE_ENV: 'production' } };
+  </script>
+
+  <!-- Global Error Logger (For Debugging White Screen) -->
+  <script>
+    window.onerror = function(message, source, lineno, colno, error) {
+      const errorContainer = document.createElement('div');
+      errorContainer.style.position = 'fixed';
+      errorContainer.style.top = '0';
+      errorContainer.style.left = '0';
+      errorContainer.style.width = '100%';
+      errorContainer.style.backgroundColor = '#fee2e2'; // red-100
+      errorContainer.style.color = '#991b1b'; // red-800
+      errorContainer.style.padding = '20px';
+      errorContainer.style.zIndex = '9999';
+      errorContainer.style.fontFamily = 'monospace';
+      errorContainer.style.borderBottom = '1px solid #b91c1c';
+      errorContainer.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+      errorContainer.innerHTML = '<strong>Application Error:</strong><br>' + 
+        message + '<br><small>' + source + ':' + lineno + '</small>';
+      document.body.appendChild(errorContainer);
+      console.error('Global Error Caught:', error);
+    };
+  </script>
+
   <!-- SEO & Meta Tags -->
   <meta name="description" content="Yüksekova'nın 1 numaralı araç kiralama şirketi Alperler Rent A Car. Cilo-Sat turları, SUV, Minibüs kiralama ve şoförlü araç hizmetleri. Güvenli ve konforlu yolculuk.">
   <meta name="keywords" content="yüksekova rent a car, hakkari araç kiralama, cilo sat turları, yüksekova oto kiralama, alperler rent a car, şoförlü araç kiralama, erkan alper, hicran alper">
