@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { CarService } from '../../services/car.service';
 
 @Component({
   selector: 'app-admin-login',
@@ -20,7 +21,11 @@ import { AuthService } from '../../services/auth.service';
          <div class="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900/90 to-amber-900/20"></div>
          
          <div class="relative z-10 text-center p-12 animate-fade-in">
-             <div class="w-24 h-24 bg-amber-500 text-slate-900 rounded-2xl flex items-center justify-center text-5xl font-serif font-bold mx-auto mb-8 shadow-[0_0_40px_rgba(245,158,11,0.4)]">A</div>
+             @if(config().logoUrl) {
+                 <img [src]="config().logoUrl" alt="Logo" class="h-24 object-contain mx-auto mb-8 drop-shadow-2xl">
+             } @else {
+                 <div class="w-24 h-24 bg-amber-500 text-slate-900 rounded-2xl flex items-center justify-center text-5xl font-serif font-bold mx-auto mb-8 shadow-[0_0_40px_rgba(245,158,11,0.4)]">A</div>
+             }
              <h1 class="text-6xl font-serif font-bold text-white mb-4 tracking-tight">YÖNETİM</h1>
              <p class="text-slate-400 text-xl tracking-[0.3em] uppercase font-light border-t border-white/10 pt-6 mt-6 inline-block">Alperler Rent A Car</p>
          </div>
@@ -133,7 +138,10 @@ import { AuthService } from '../../services/auth.service';
 })
 export class AdminLoginComponent implements OnInit {
   authService = inject(AuthService);
+  carService = inject(CarService);
   router = inject(Router);
+  
+  config = this.carService.getConfig();
 
   username = '';
   password = '';

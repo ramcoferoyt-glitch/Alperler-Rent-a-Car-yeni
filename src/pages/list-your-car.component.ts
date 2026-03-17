@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CarService } from '../services/car.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-list-your-car',
@@ -137,6 +138,7 @@ import { CarService } from '../services/car.service';
 export class ListYourCarComponent {
   private fb = inject(FormBuilder);
   private carService = inject(CarService);
+  private toastService = inject(ToastService);
 
   isSubmitting = signal(false);
   submitSuccess = signal(false);
@@ -173,7 +175,7 @@ export class ListYourCarComponent {
         this.submitSuccess.set(true);
       } catch (error) {
         console.error('Error submitting partner request:', error);
-        alert('Başvuru gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin veya bizimle iletişime geçin.');
+        this.toastService.show('Başvuru gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin veya bizimle iletişime geçin.', 'error');
       } finally {
         this.isSubmitting.set(false);
       }

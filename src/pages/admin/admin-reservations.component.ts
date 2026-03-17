@@ -3,6 +3,7 @@ import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@a
 import { CommonModule } from '@angular/common';
 import { CarService } from '../../services/car.service';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-reservations',
@@ -60,7 +61,8 @@ import { ToastService } from '../../services/toast.service';
                             <button (click)="updateStatus(res.id!, 'APPROVED')" class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-bold transition-transform hover:scale-105 shadow">Onayla</button>
                             <button (click)="updateStatus(res.id!, 'REJECTED')" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-bold transition-transform hover:scale-105 shadow">Reddet</button>
                           } @else {
-                            <span class="text-slate-400 text-xs italic">İşlem tamamlandı</span>
+                            <span class="text-slate-400 text-xs italic mr-2">İşlem tamamlandı</span>
+                            <button (click)="deleteReservation(res.id!)" class="bg-slate-200 hover:bg-red-500 hover:text-white text-slate-600 px-3 py-1 rounded text-xs font-bold transition-colors shadow">Sil</button>
                           }
                        </td>
                     </tr>
@@ -78,6 +80,7 @@ import { ToastService } from '../../services/toast.service';
 export class AdminReservationsComponent {
   carService = inject(CarService);
   toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   reservations = this.carService.getReservations();
   
   filter = signal<'ALL' | 'PENDING' | 'APPROVED'>('ALL');
@@ -88,12 +91,31 @@ export class AdminReservationsComponent {
      return current.filter(r => r.status === this.filter());
   });
 
-  updateStatus(id: string, status: 'APPROVED' | 'REJECTED') {
+  async updateStatus(id: string, status: 'APPROVED' | 'REJECTED') {
+      if (status === 'REJECTED') {
+          const confirmed = await this.confirmService.confirm({
+              title: 'Rezervasyonu Reddet',
+              message: 'Bu rezervasyonu reddetmek istediğinize emin misiniz?'
+          });
+          if (!confirmed) return;
+      }
+      
       this.carService.updateReservationStatus(id, status);
       if (status === 'APPROVED') {
           this.toastService.show('Rezervasyon onaylandı.', 'success');
       } else {
           this.toastService.show('Rezervasyon reddedildi.', 'info');
+      }
+  }
+
+  async deleteReservation(id: string) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Rezervasyonu Sil',
+          message: 'Bu rezervasyonu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.'
+      });
+      if(confirmed) {
+          this.carService.deleteReservation(id);
+          this.toastService.show('Rezervasyon silindi.', 'info');
       }
   }
 }

@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarService } from '../services/car.service';
 import { UiService } from '../services/ui.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-gemini-advisor',
@@ -185,6 +186,7 @@ import { UiService } from '../services/ui.service';
 export class GeminiAdvisorComponent {
   carService = inject(CarService);
   uiService = inject(UiService);
+  toastService = inject(ToastService);
   isOpen = signal(false);
   messages = signal<{text: string, isUser: boolean}[]>([]);
   currentInput = '';
@@ -296,7 +298,7 @@ export class GeminiAdvisorComponent {
   startListening() {
     this.stopSpeaking(); // Stop speaking when listening starts
     if (!this.recognition) {
-        alert('Tarayıcınız sesli komut özelliğini desteklemiyor.');
+        this.toastService.show('Tarayıcınız sesli komut özelliğini desteklemiyor.', 'error');
         return;
     }
     

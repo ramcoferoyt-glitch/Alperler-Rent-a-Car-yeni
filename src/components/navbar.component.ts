@@ -15,15 +15,19 @@ import { UiService, Language } from '../services/ui.service';
         <div class="flex justify-between items-center h-20 md:h-24">
           <!-- Logo -->
           <div class="flex-shrink-0 flex items-center cursor-pointer group" routerLink="/">
-            <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-500 rounded-sm flex items-center justify-center mr-3 md:mr-4 shadow-[0_0_15px_rgba(245,158,11,0.3)] group-hover:bg-white transition-all duration-500">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 md:w-8 md:h-8 text-slate-900 group-hover:text-amber-500 transition-colors">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
-              </svg>
-            </div>
-            <div class="flex flex-col justify-center">
-              <span class="font-serif font-bold text-xl md:text-2xl text-white tracking-tight leading-none group-hover:text-amber-500 transition-colors">ALPERLER</span>
-              <span class="text-[0.5rem] md:text-[0.6rem] text-slate-400 font-bold tracking-[0.35em] uppercase mt-1 text-justify w-full">Rent A Car</span>
-            </div>
+            @if(config().logoUrl) {
+                <img [src]="config().logoUrl" alt="Alperler Rent A Car Logo" class="h-10 md:h-12 object-contain mr-3 md:mr-4">
+            } @else {
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-500 rounded-sm flex items-center justify-center mr-3 md:mr-4 shadow-[0_0_15px_rgba(245,158,11,0.3)] group-hover:bg-white transition-all duration-500">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 md:w-8 md:h-8 text-slate-900 group-hover:text-amber-500 transition-colors">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                  </svg>
+                </div>
+                <div class="flex flex-col justify-center">
+                  <span class="font-serif font-bold text-xl md:text-2xl text-white tracking-tight leading-none group-hover:text-amber-500 transition-colors">ALPERLER</span>
+                  <span class="text-[0.5rem] md:text-[0.6rem] text-slate-400 font-bold tracking-[0.35em] uppercase mt-1 text-justify w-full">Rent A Car</span>
+                </div>
+            }
           </div>
 
           <!-- Desktop Menu -->
@@ -135,6 +139,7 @@ import { UiService, Language } from '../services/ui.service';
 export class NavbarComponent {
   carService = inject(CarService);
   uiService = inject(UiService);
+  config = this.carService.getConfig();
   isMenuOpen = signal(false);
   isLangMenuOpen = signal(false);
   

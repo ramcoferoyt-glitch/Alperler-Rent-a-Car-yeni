@@ -3,6 +3,7 @@ import { Component, inject, ChangeDetectionStrategy, signal } from '@angular/cor
 import { CommonModule } from '@angular/common';
 import { CarService } from '../../services/car.service';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-partner-requests',
@@ -60,10 +61,15 @@ import { ToastService } from '../../services/toast.service';
 export class AdminPartnerRequestsComponent {
   carService = inject(CarService);
   toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   requests = this.carService.getPartnerRequests();
 
-  deleteRequest(id: number) {
-      if(confirm('Bu başvuruyu silmek istediğinize emin misiniz?')) {
+  async deleteRequest(id: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Başvuruyu Sil',
+          message: 'Bu başvuruyu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.'
+      });
+      if(confirmed) {
           this.carService.deletePartnerRequest(id);
           this.toastService.show('Başvuru silindi.', 'info');
       }

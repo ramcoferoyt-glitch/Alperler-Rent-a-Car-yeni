@@ -3,6 +3,8 @@ import { Component, inject, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarService, Feedback } from '../../services/car.service';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-feedback',
@@ -89,6 +91,8 @@ import { FormsModule } from '@angular/forms';
 })
 export class AdminFeedbackComponent {
   carService = inject(CarService);
+  toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   
   filter = signal<'ALL' | 'NEW' | 'REVIEWED' | 'ARCHIVED'>('ALL');
   isAnalyzing = signal(false);
@@ -123,9 +127,14 @@ export class AdminFeedbackComponent {
       this.carService.updateFeedbackStatus(id, status);
   }
 
-  deleteFeedback(id: number) {
-      if(confirm('Bu geri bildirimi silmek istediğinize emin misiniz?')) {
+  async deleteFeedback(id: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Geri Bildirimi Sil',
+          message: 'Bu geri bildirimi silmek istediğinize emin misiniz?'
+      });
+      if(confirmed) {
           this.carService.deleteFeedback(id);
+          this.toastService.show('Geri bildirim silindi.', 'info');
       }
   }
 

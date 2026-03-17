@@ -18,8 +18,12 @@ import { UiService } from '../services/ui.service';
           <!-- Brand Info -->
           <div class="col-span-1">
             <div class="flex items-center mb-6 group cursor-pointer" routerLink="/">
-              <div class="w-10 h-10 bg-amber-500 text-slate-900 flex items-center justify-center font-serif font-bold text-xl mr-3 rounded-sm group-hover:bg-white transition-colors">A</div>
-              <span class="text-2xl font-serif font-bold text-white tracking-tight group-hover:text-amber-500 transition-colors">ALPERLER</span>
+              @if(config().logoUrl) {
+                  <img [src]="config().logoUrl" alt="Alperler Rent A Car Logo" class="h-10 object-contain mr-3">
+              } @else {
+                  <div class="w-10 h-10 bg-amber-500 text-slate-900 flex items-center justify-center font-serif font-bold text-xl mr-3 rounded-sm group-hover:bg-white transition-colors">A</div>
+                  <span class="text-2xl font-serif font-bold text-white tracking-tight group-hover:text-amber-500 transition-colors">ALPERLER</span>
+              }
             </div>
             <p class="text-slate-500 mb-6 leading-relaxed text-sm">
               {{ config().footerText }}
@@ -70,6 +74,7 @@ import { UiService } from '../services/ui.service';
               <li><button (click)="openLegal('insurance')" class="hover:text-amber-500 transition-colors">Araç Sigorta ve Sorumluluk</button></li>
               <li><button (click)="openLegal('kvkk')" class="hover:text-amber-500 transition-colors">KVKK Aydınlatma Metni</button></li>
               <li><button (click)="openLegal('privacy')" class="hover:text-amber-500 transition-colors">Gizlilik Politikası</button></li>
+              <li><button (click)="openLegal('cookies')" class="hover:text-amber-500 transition-colors">Çerez Politikası</button></li>
               <li><a routerLink="/faq" class="hover:text-amber-500 transition-colors">Sıkça Sorulan Sorular</a></li>
               <!-- Feedback Link -->
               <li><button (click)="openFeedback()" class="text-amber-500 hover:text-amber-400 transition-colors font-medium flex items-center">

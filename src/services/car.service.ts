@@ -111,6 +111,7 @@ export class CarService {
   
   // 1. Site Configuration
   private _config = signal<SiteConfig>({
+    logoUrl: '',
     companyName: 'Alperler Rent A Car',
     phone: '0537 959 48 51',
     email: 'info@alperlerrentacar.com',
@@ -890,7 +891,13 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
   }
 
   addBlogPost(post: BlogPost) {
-      this._blogPosts.update(posts => [{ ...post, id: Date.now() }, ...posts]);
+      this._blogPosts.update(posts => {
+          if (post.id && posts.find(p => p.id === post.id)) {
+              return posts.map(p => p.id === post.id ? post : p);
+          } else {
+              return [{ ...post, id: Date.now() }, ...posts];
+          }
+      });
   }
   deleteBlogPost(id: number) {
       this._blogPosts.update(posts => posts.filter(p => p.id !== id));
@@ -929,6 +936,10 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
       }));
   }
 
+  deleteReservation(id: string) {
+      this._reservations.update(res => res.filter(r => r.id !== id));
+  }
+
   setBookingRequest(request: BookingRequest) { this._bookingRequest.set(request); }
   getBookingRequest() { return this._bookingRequest(); }
   clearBookingRequest() { this._bookingRequest.set(null); }
@@ -944,6 +955,10 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
       if (!this._subscribers().includes(email)) {
           this._subscribers.update(s => [email, ...s]);
       }
+  }
+
+  removeSubscriber(email: string) {
+      this._subscribers.update(s => s.filter(e => e !== email));
   }
 
   // Production-ready notification handler

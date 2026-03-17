@@ -3,6 +3,8 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarService } from '../../services/car.service';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-blog',
@@ -44,9 +46,14 @@ import { CarService } from '../../services/car.service';
                         <span class="text-xs text-slate-400 mt-1 block">{{ post.date }}</span>
                     </div>
                 </div>
-                <button (click)="deletePost(post.id)" class="text-red-400 hover:text-red-600 p-2 bg-red-50 rounded-full hover:bg-red-100 transition-colors">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                </button>
+                <div class="flex items-center space-x-2">
+                    <button (click)="editPost(post)" class="text-amber-400 hover:text-amber-600 p-2 bg-amber-50 rounded-full hover:bg-amber-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                    </button>
+                    <button (click)="deletePost(post.id)" class="text-red-400 hover:text-red-600 p-2 bg-red-50 rounded-full hover:bg-red-100 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                    </button>
+                </div>
             </div>
         }
     </div>
@@ -54,6 +61,8 @@ import { CarService } from '../../services/car.service';
 })
 export class AdminBlogComponent {
   carService = inject(CarService);
+  toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   posts = this.carService.getBlogPosts();
   showForm = signal(false);
 
@@ -61,18 +70,38 @@ export class AdminBlogComponent {
       title: '', summary: '', content: '', image: 'https://picsum.photos/800/600', readTime: '', date: new Date().toLocaleDateString('tr-TR')
   };
 
-  toggleForm() { this.showForm.update(v => !v); }
+  toggleForm() { 
+      this.showForm.update(v => !v); 
+      if (!this.showForm()) {
+          this.newPost = { title: '', summary: '', content: '', image: 'https://picsum.photos/800/600', readTime: '', date: new Date().toLocaleDateString('tr-TR') };
+      }
+  }
+
+  editPost(post: any) {
+      this.newPost = { ...post };
+      this.showForm.set(true);
+  }
 
   addPost() {
+      if (!this.newPost.title || !this.newPost.content) {
+          this.toastService.show('Lütfen başlık ve içerik alanlarını doldurun.', 'error');
+          return;
+      }
       this.carService.addBlogPost(this.newPost);
-      this.toggleForm();
+      this.toastService.show(this.newPost.id ? 'Yazı güncellendi.' : 'Yeni yazı eklendi.', 'success');
+      this.showForm.set(false);
       // Reset
       this.newPost = { title: '', summary: '', content: '', image: 'https://picsum.photos/800/600', readTime: '', date: new Date().toLocaleDateString('tr-TR') };
   }
 
-  deletePost(id: number) {
-      if(confirm('Bu yazıyı silmek istediğinize emin misiniz?')) {
+  async deletePost(id: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Yazıyı Sil',
+          message: 'Bu yazıyı silmek istediğinize emin misiniz?'
+      });
+      if(confirmed) {
           this.carService.deleteBlogPost(id);
+          this.toastService.show('Yazı silindi.', 'info');
       }
   }
 }

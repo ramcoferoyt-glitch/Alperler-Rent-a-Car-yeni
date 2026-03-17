@@ -3,6 +3,9 @@ import { Component, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarService, FaqItem } from '../../services/car.service';
+import { AuthService } from '../../services/auth.service';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { SiteConfig, TeamMember } from '../../models/site-config.model';
 
 @Component({
@@ -26,6 +29,7 @@ import { SiteConfig, TeamMember } from '../../models/site-config.model';
             <button (click)="activeTab.set('team')" [class.border-amber-500]="activeTab() === 'team'" [class.text-amber-600]="activeTab() === 'team'" class="pb-2 px-4 font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-colors whitespace-nowrap">Ekip & Hakkımızda</button>
             <button (click)="activeTab.set('legal')" [class.border-amber-500]="activeTab() === 'legal'" [class.text-amber-600]="activeTab() === 'legal'" class="pb-2 px-4 font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-colors whitespace-nowrap">Yasal Metinler</button>
             <button (click)="activeTab.set('faq')" [class.border-amber-500]="activeTab() === 'faq'" [class.text-amber-600]="activeTab() === 'faq'" class="pb-2 px-4 font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-colors whitespace-nowrap">SSS</button>
+            <button (click)="activeTab.set('account')" [class.border-amber-500]="activeTab() === 'account'" [class.text-amber-600]="activeTab() === 'account'" class="pb-2 px-4 font-bold text-slate-500 hover:text-slate-800 border-b-2 border-transparent transition-colors whitespace-nowrap">Admin Hesabı</button>
         </div>
 
         <form (submit)="saveConfig($event)" class="space-y-8">
@@ -34,8 +38,33 @@ import { SiteConfig, TeamMember } from '../../models/site-config.model';
            @if(activeTab() === 'general') {
                <!-- Contact Info -->
                <div class="space-y-4">
-                  <h3 class="font-bold text-lg border-b pb-2 text-slate-700">İletişim Bilgileri</h3>
+                  <h3 class="font-bold text-lg border-b pb-2 text-slate-700">Şirket Bilgileri & Logo</h3>
                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div class="md:col-span-2 flex items-center gap-6 bg-slate-50 p-4 rounded border">
+                          <div class="w-32 h-32 bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center overflow-hidden relative group">
+                              @if(formConfig.logoUrl) {
+                                  <img [src]="formConfig.logoUrl" class="w-full h-full object-contain p-2">
+                              } @else {
+                                  <div class="text-center text-slate-400">
+                                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8 mx-auto mb-1">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                                      </svg>
+                                      <span class="text-xs font-bold">Logo Yok</span>
+                                  </div>
+                              }
+                              <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <label class="cursor-pointer text-white text-xs font-bold px-3 py-1 bg-amber-500 rounded hover:bg-amber-600">
+                                      Değiştir
+                                      <input type="file" (change)="onLogoSelected($event)" accept="image/*" class="hidden">
+                                  </label>
+                              </div>
+                          </div>
+                          <div class="flex-1">
+                              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Logo URL (veya Dosya Seçin)</label>
+                              <input [(ngModel)]="formConfig.logoUrl" name="logoUrl" class="w-full p-3 bg-white border rounded text-sm text-slate-600 mb-2" placeholder="https://...">
+                              <p class="text-xs text-slate-500">Önerilen boyut: 200x60px. Şeffaf arka planlı PNG tercih edin.</p>
+                          </div>
+                      </div>
                       <div>
                          <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Şirket Adı</label>
                          <input [(ngModel)]="formConfig.companyName" name="companyName" class="w-full p-3 bg-slate-50 border rounded font-bold">
@@ -357,6 +386,26 @@ import { SiteConfig, TeamMember } from '../../models/site-config.model';
                </div>
            }
 
+           <!-- ACCOUNT TAB -->
+           @if(activeTab() === 'account') {
+               <div class="space-y-4">
+                  <h3 class="font-bold text-lg border-b pb-2 text-slate-700">Admin Hesap Bilgileri</h3>
+                  <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
+                      <p class="text-sm text-slate-500 mb-4">Admin paneline giriş yapmak için kullandığınız kullanıcı adı (e-posta) ve şifreyi buradan güncelleyebilirsiniz.</p>
+                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div>
+                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Kullanıcı Adı (E-Posta)</label>
+                             <input [(ngModel)]="adminUser" name="adminUser" type="email" class="w-full p-3 bg-white border rounded font-bold" required>
+                          </div>
+                          <div>
+                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Yeni Şifre</label>
+                             <input [(ngModel)]="adminPass" name="adminPass" type="password" class="w-full p-3 bg-white border rounded" placeholder="Değiştirmek istemiyorsanız boş bırakın">
+                          </div>
+                      </div>
+                  </div>
+               </div>
+           }
+
            <div class="sticky bottom-4 bg-white/80 backdrop-blur p-4 border-t border-slate-200 shadow-lg rounded-xl mt-8 z-10">
                <button type="submit" class="w-full py-4 bg-slate-900 hover:bg-amber-500 hover:text-slate-900 text-white font-bold rounded-lg uppercase tracking-widest transition-colors shadow-lg text-sm">
                    Tüm Ayarları Kaydet ve Yayınla
@@ -369,13 +418,19 @@ import { SiteConfig, TeamMember } from '../../models/site-config.model';
 })
 export class AdminSettingsComponent {
   carService = inject(CarService);
+  authService = inject(AuthService);
+  toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   currentConfig = this.carService.getConfig();
   faqs = this.carService.getFaqs();
   
   formConfig: SiteConfig = { ...this.currentConfig() };
   saveSuccess = signal(false);
-  activeTab = signal<'general' | 'content' | 'team' | 'legal' | 'faq'>('general');
+  activeTab = signal<'general' | 'content' | 'team' | 'legal' | 'faq' | 'account'>('general');
   
+  adminUser = localStorage.getItem('adminUser') || 'ishak595@gmail.com';
+  adminPass = ''; // Don't show current password
+
   newFaq: Partial<FaqItem> = {};
 
   constructor() {
@@ -401,9 +456,28 @@ export class AdminSettingsComponent {
     }
   }
 
+  onLogoSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.formConfig.logoUrl = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   saveConfig(event: Event) {
       event.preventDefault();
       this.carService.updateConfig(this.formConfig);
+      
+      // Update admin credentials if provided
+      if (this.adminUser) {
+          const passToSave = this.adminPass ? this.adminPass : (localStorage.getItem('adminPass') || 'i4h4k5a2p7r7');
+          this.authService.updateCredentials(this.adminUser, passToSave);
+          this.adminPass = ''; // Clear password field after save
+      }
+
       this.saveSuccess.set(true);
       setTimeout(() => this.saveSuccess.set(false), 3000);
       window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -424,18 +498,27 @@ export class AdminSettingsComponent {
       this.formConfig.team = [...this.formConfig.team, newMember];
   }
 
-  removeTeamMember(index: number) {
-      if(confirm('Bu ekip üyesini silmek istediğinize emin misiniz?')) {
+  async removeTeamMember(index: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Üyeyi Sil',
+          message: 'Bu ekip üyesini silmek istediğinize emin misiniz?'
+      });
+      if(confirmed) {
           const newTeam = [...this.formConfig.team];
           newTeam.splice(index, 1);
           this.formConfig.team = newTeam;
+          this.toastService.show('Ekip üyesi silindi.', 'info');
       }
   }
 
-  resetStats() {
-      if(confirm('Ziyaretçi sayacını sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.')) {
+  async resetStats() {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Sayacı Sıfırla',
+          message: 'Ziyaretçi sayacını sıfırlamak istediğinize emin misiniz? Bu işlem geri alınamaz.'
+      });
+      if(confirmed) {
           this.carService.resetStats();
-          alert('İstatistikler sıfırlandı.');
+          this.toastService.show('İstatistikler sıfırlandı.', 'success');
       }
   }
 
@@ -446,9 +529,14 @@ export class AdminSettingsComponent {
       }
   }
 
-  deleteFaq(id: number) {
-      if(confirm('Silmek istediğinize emin misiniz?')) {
+  async deleteFaq(id: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'SSS Sil',
+          message: 'Silmek istediğinize emin misiniz?'
+      });
+      if(confirmed) {
           this.carService.deleteFaq(id);
+          this.toastService.show('Soru silindi.', 'info');
       }
   }
 

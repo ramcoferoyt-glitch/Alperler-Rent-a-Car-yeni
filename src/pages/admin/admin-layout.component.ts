@@ -3,19 +3,27 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { CarService } from '../../services/car.service';
 import { ToastComponent } from '../../components/toast.component';
+import { ConfirmModalComponent } from '../../components/confirm-modal.component';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent],
+  imports: [CommonModule, RouterOutlet, RouterLink, RouterLinkActive, ToastComponent, ConfirmModalComponent],
   template: `
     <app-toast></app-toast>
+    <app-confirm-modal></app-confirm-modal>
     <div class="flex min-h-screen bg-slate-100 font-sans relative">
       
       <!-- Mobile Header -->
       <div class="md:hidden fixed top-0 w-full bg-slate-900 text-white z-30 px-4 py-3 flex justify-between items-center shadow-md">
-         <span class="font-serif font-bold text-lg">ALPERLER <span class="text-amber-500">Admin</span></span>
+         <div class="flex items-center">
+            @if(config().logoUrl) {
+                <img [src]="config().logoUrl" alt="Logo" class="h-8 object-contain mr-2">
+            }
+            <span class="font-serif font-bold text-lg">ALPERLER <span class="text-amber-500">Admin</span></span>
+         </div>
          <button (click)="toggleSidebar()" class="text-white focus:outline-none">
              <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
          </button>
@@ -28,7 +36,10 @@ import { ToastComponent } from '../../components/toast.component';
 
       <!-- Sidebar -->
       <aside [class]="isSidebarOpen() ? 'translate-x-0' : '-translate-x-full md:translate-x-0'" class="w-64 bg-slate-900 text-white flex flex-col fixed h-full z-40 shadow-2xl transition-transform duration-300 pt-16 md:pt-0">
-        <div class="hidden md:flex p-6 border-b border-white/10 items-center justify-center">
+        <div class="hidden md:flex p-6 border-b border-white/10 items-center justify-center flex-col">
+           @if(config().logoUrl) {
+               <img [src]="config().logoUrl" alt="Logo" class="h-12 object-contain mb-2">
+           }
            <span class="font-serif font-bold text-2xl text-white">ALPERLER <span class="text-amber-500">Admin</span></span>
         </div>
         
@@ -95,6 +106,8 @@ import { ToastComponent } from '../../components/toast.component';
 })
 export class AdminLayoutComponent {
   authService = inject(AuthService);
+  carService = inject(CarService);
+  config = this.carService.getConfig();
   isSidebarOpen = signal(false);
 
   toggleSidebar() {

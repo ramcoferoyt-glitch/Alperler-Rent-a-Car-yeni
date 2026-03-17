@@ -3,6 +3,8 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarService, Tour } from '../../services/car.service';
+import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 
 @Component({
   selector: 'app-admin-tours',
@@ -99,6 +101,8 @@ import { CarService, Tour } from '../../services/car.service';
 })
 export class AdminToursComponent {
   carService = inject(CarService);
+  toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   tours = this.carService.getTours();
   
   isModalOpen = signal(false);
@@ -134,13 +138,21 @@ export class AdminToursComponent {
       e.preventDefault();
       if (this.formTour.title && this.formTour.price) {
           this.carService.addTour(this.formTour as Tour);
+          this.toastService.show(this.editingTour() ? 'Tur güncellendi.' : 'Yeni tur eklendi.', 'success');
           this.closeModal();
+      } else {
+          this.toastService.show('Lütfen gerekli alanları doldurun.', 'error');
       }
   }
 
-  deleteTour(id: number) {
-      if(confirm('Bu turu silmek istediğinize emin misiniz?')) {
+  async deleteTour(id: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Turu Sil',
+          message: 'Bu turu silmek istediğinize emin misiniz?'
+      });
+      if(confirmed) {
           this.carService.deleteTour(id);
+          this.toastService.show('Tur silindi.', 'info');
       }
   }
 }

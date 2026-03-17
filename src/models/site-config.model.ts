@@ -8,6 +8,7 @@ export interface TeamMember {
 }
 
 export interface SiteConfig {
+  logoUrl: string;
   companyName: string;
   phone: string;
   email: string;

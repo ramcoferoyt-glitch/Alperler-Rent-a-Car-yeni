@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CarService, SaleCar } from '../../services/car.service';
 import { ToastService } from '../../services/toast.service';
+import { ConfirmService } from '../../services/confirm.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -241,6 +242,7 @@ import { Router } from '@angular/router';
 export class AdminCarsComponent implements OnInit {
   carService = inject(CarService);
   toastService = inject(ToastService);
+  confirmService = inject(ConfirmService);
   router = inject(Router);
   
   cars = this.carService.getCars();
@@ -379,8 +381,12 @@ export class AdminCarsComponent implements OnInit {
       this.closeForm();
   }
 
-  deleteCar(id: number) {
-      if(confirm('Bu aracı silmek istediğinize emin misiniz?')) {
+  async deleteCar(id: number) {
+      const confirmed = await this.confirmService.confirm({
+          title: 'Aracı Sil',
+          message: 'Bu aracı silmek istediğinize emin misiniz?'
+      });
+      if(confirmed) {
           if (this.activeTab() === 'RENTAL') {
               this.carService.deleteCar(id);
           } else {

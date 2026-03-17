@@ -5,6 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { CarService, BookingRequest } from '../services/car.service';
 import { UiService } from '../services/ui.service';
+import { ToastService } from '../services/toast.service';
 
 @Component({
   selector: 'app-contact',
@@ -343,6 +344,7 @@ export class ContactComponent implements OnInit {
   carService = inject(CarService);
   uiService = inject(UiService);
   router = inject(Router);
+  toastService = inject(ToastService);
   config = this.carService.getConfig();
   
   bookingData = signal<BookingRequest | null>(null);
@@ -521,7 +523,7 @@ export class ContactComponent implements OnInit {
 
       this.carService.sendNotification('admin@alperler.com', message);
       
-      alert('Mesajınız iletildi! Teşekkürler.');
+      this.toastService.show('Mesajınız iletildi! Teşekkürler.', 'success');
       
       // Reset Form
       this.contactName = '';
