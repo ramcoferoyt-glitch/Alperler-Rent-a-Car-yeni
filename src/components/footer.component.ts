@@ -1,6 +1,6 @@
 
 import { Component, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { CarService } from '../services/car.service';
@@ -26,7 +26,7 @@ import { UiService } from '../services/ui.service';
               }
             </div>
             <p class="text-slate-500 mb-6 leading-relaxed text-sm">
-              {{ config().footerText }}
+              {{ t().footer.footerText }}
             </p>
             
             <!-- Social Media Icons (Clean Row) -->
@@ -54,60 +54,60 @@ import { UiService } from '../services/ui.service';
 
           <!-- Quick Links -->
           <div>
-            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">Kurumsal</h3>
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">{{ t().footer.corporate }}</h3>
             <ul class="space-y-3 text-sm">
-              <li><button (click)="openAbout()" class="hover:text-amber-500 transition-colors">Hakkımızda</button></li>
-              <li><a routerLink="/fleet" class="hover:text-amber-500 transition-colors">Araç Filosu</a></li>
-              <li><a routerLink="/sales" class="hover:text-amber-500 transition-colors">Satılık Araçlar</a></li>
-              <li><a routerLink="/list-your-car" class="hover:text-amber-500 transition-colors">Aracını Kiraya Ver</a></li>
-              <li><a routerLink="/blog" class="hover:text-amber-500 transition-colors">Blog</a></li>
+              <li><button (click)="openAbout()" class="hover:text-amber-500 transition-colors">{{ t().nav.about }}</button></li>
+              <li><a routerLink="/fleet" class="hover:text-amber-500 transition-colors">{{ t().nav.fleet }}</a></li>
+              <li><a routerLink="/sales" class="hover:text-amber-500 transition-colors">{{ t().nav.sales }}</a></li>
+              <li><a routerLink="/list-your-car" class="hover:text-amber-500 transition-colors">{{ t().nav.earn }}</a></li>
+              <li><a routerLink="/blog" class="hover:text-amber-500 transition-colors">{{ t().nav.blog }}</a></li>
             </ul>
           </div>
 
           <!-- Legal -->
           <div>
-            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">Yasal</h3>
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">{{ t().footer.legal }}</h3>
             <ul class="space-y-3 text-sm">
-              <li><button (click)="openLegal('terms')" class="hover:text-amber-500 transition-colors">Kullanım Şartları</button></li>
-              <li><button (click)="openLegal('distance-selling')" class="hover:text-amber-500 transition-colors">Mesafeli Satış Sözleşmesi</button></li>
-              <li><button (click)="openLegal('cancellation')" class="hover:text-amber-500 transition-colors">İade ve İptal Politikası</button></li>
-              <li><button (click)="openLegal('insurance')" class="hover:text-amber-500 transition-colors">Araç Sigorta ve Sorumluluk</button></li>
-              <li><button (click)="openLegal('kvkk')" class="hover:text-amber-500 transition-colors">KVKK Aydınlatma Metni</button></li>
-              <li><button (click)="openLegal('privacy')" class="hover:text-amber-500 transition-colors">Gizlilik Politikası</button></li>
-              <li><button (click)="openLegal('cookies')" class="hover:text-amber-500 transition-colors">Çerez Politikası</button></li>
-              <li><a routerLink="/faq" class="hover:text-amber-500 transition-colors">Sıkça Sorulan Sorular</a></li>
+              <li><button (click)="openLegal('terms')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.terms }}</button></li>
+              <li><button (click)="openLegal('distance-selling')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.distanceSelling }}</button></li>
+              <li><button (click)="openLegal('cancellation')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.cancellation }}</button></li>
+              <li><button (click)="openLegal('insurance')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.insurance }}</button></li>
+              <li><button (click)="openLegal('kvkk')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.kvkk }}</button></li>
+              <li><button (click)="openLegal('privacy')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.privacy }}</button></li>
+              <li><button (click)="openLegal('cookies')" class="hover:text-amber-500 transition-colors">{{ t().footer.links.cookies }}</button></li>
+              <li><a routerLink="/faq" class="hover:text-amber-500 transition-colors">{{ t().footer.links.faq }}</a></li>
               <!-- Feedback Link -->
               <li><button (click)="openFeedback()" class="text-amber-500 hover:text-amber-400 transition-colors font-medium flex items-center">
                   <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/></svg>
-                  Geri Bildirim Gönder
+                  {{ t().footer.feedbackBtn }}
               </button></li>
             </ul>
           </div>
 
           <!-- Newsletter & Contact -->
           <div>
-            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">Bülten Aboneliği</h3>
-            <p class="text-sm text-slate-500 mb-4">Kampanyalardan ve yeni araçlardan haberdar olmak için ücretsiz abone olun.</p>
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-6 text-amber-500">{{ t().footer.newsletter }}</h3>
+            <p class="text-sm text-slate-500 mb-4">{{ t().footer.newsletterSub }}</p>
             
             <form (submit)="subscribe($event)" class="mb-8">
                 <div class="flex flex-col space-y-2">
-                    <input type="email" [(ngModel)]="email" name="email" aria-label="E-posta Adresiniz" placeholder="E-posta adresiniz" required class="w-full bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-4 py-3 focus:ring-1 focus:ring-amber-500 outline-none transition-all">
+                    <input type="email" [(ngModel)]="email" name="email" [attr.aria-label]="t().footer.emailPlaceholder" [placeholder]="t().footer.emailPlaceholder" required class="w-full bg-slate-900 border border-slate-800 text-slate-300 text-sm rounded-lg px-4 py-3 focus:ring-1 focus:ring-amber-500 outline-none transition-all">
                     <button type="submit" class="bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold py-3 px-4 rounded-lg transition-colors flex items-center justify-center">
-                        Ücretsiz Abone Ol
+                        {{ t().footer.subscribeBtn }}
                         <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                     </button>
                 </div>
                 @if (subscribed()) {
                     <div class="mt-3 bg-green-500/10 border border-green-500/20 rounded-lg p-3 flex items-start animate-fade-in">
                         <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                        <p class="text-green-500 text-xs font-bold">Tebrikler! Bültenimize başarıyla abone oldunuz. Kampanyalarımızdan ilk siz haberdar olacaksınız.</p>
+                        <p class="text-green-500 text-xs font-bold">{{ t().footer.subscribeSuccess }}</p>
                     </div>
                 }
             </form>
 
-            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4 text-amber-500">Bize Ulaşın</h3>
+            <h3 class="text-white font-bold uppercase tracking-wider text-xs mb-4 text-amber-500">{{ t().footer.contactUs }}</h3>
             <button (click)="openContact()" class="inline-flex items-center justify-center bg-slate-800 hover:bg-white hover:text-slate-900 text-slate-300 font-bold py-3 px-6 rounded-lg transition-all duration-300 w-full border border-slate-700 hover:border-white">
-                İletişime Geç
+                {{ t().footer.contactBtn }}
             </button>
           </div>
         </div>
@@ -122,7 +122,7 @@ import { UiService } from '../services/ui.service';
              </a>
           </div>
           <div class="flex items-center justify-center md:justify-end w-full md:w-auto">
-             <span>Designed with ❤️ in Yüksekova</span>
+             <span>{{ t().footer.designed }}</span>
           </div>
         </div>
       </div>
@@ -132,6 +132,7 @@ import { UiService } from '../services/ui.service';
 export class FooterComponent {
   carService = inject(CarService);
   uiService = inject(UiService);
+  router = inject(Router);
   config = this.carService.getConfig();
   t = this.uiService.translations;
   currentYear = new Date().getFullYear();
@@ -157,8 +158,8 @@ export class FooterComponent {
       this.uiService.toggleContact(true);
   }
 
-  openLegal(type: 'kvkk' | 'privacy' | 'cookies' | 'terms' | 'distance-selling' | 'cancellation' | 'insurance') {
-      this.uiService.openLegal(type);
+  openLegal(type: string) {
+      this.router.navigate(['/legal'], { queryParams: { type } });
   }
 
   openFeedback() {

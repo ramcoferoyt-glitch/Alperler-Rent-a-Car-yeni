@@ -4,25 +4,38 @@ import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { CarService } from '../services/car.service';
 import { ToastService } from '../services/toast.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-list-your-car',
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, MatIconModule],
   template: `
-    <div class="min-h-screen bg-slate-50 pt-24 pb-12">
+    <div class="min-h-screen bg-slate-50 font-sans">
+      <!-- Sticky Module Header -->
+      <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="h-16 flex items-center gap-3">
+            <button (click)="goBack()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 shrink-0" aria-label="Geri Dön">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1 class="text-lg font-bold text-slate-900">Aracını Değerlendir</h1>
+          </div>
+        </div>
+      </div>
+
       <!-- Hero Section -->
       <div class="bg-slate-900 text-white py-16 mb-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 class="text-4xl md:text-5xl font-bold mb-6">Aracınızı Kiraya Verin, Ek Gelir Elde Edin</h1>
+          <h1 class="text-4xl md:text-5xl font-bold mb-6">Aracınızı Satın veya Kiraya Verin</h1>
           <p class="text-xl text-slate-300 max-w-3xl mx-auto mb-8">
-            Kullanmadığınız zamanlarda aracınızı Alperler Rent A Car güvencesiyle kiraya verin. 
-            Tüm süreçleri biz yönetelim, siz sadece kazancınıza odaklanın.
+            Aracınızı Alperler güvencesiyle en iyi fiyata satın veya kullanmadığınız zamanlarda kiraya vererek ek gelir elde edin. 
+            Tüm süreçleri biz yönetelim, siz kazancınıza odaklanın.
           </p>
           <div class="flex justify-center gap-8 text-slate-300">
             <div class="flex flex-col items-center">
               <mat-icon class="text-amber-500 mb-2" style="transform: scale(1.5);">security</mat-icon>
-              <span>Tam Kapsamlı Sigorta</span>
+              <span>Güvenli İşlem</span>
             </div>
             <div class="flex flex-col items-center">
               <mat-icon class="text-amber-500 mb-2" style="transform: scale(1.5);">support_agent</mat-icon>
@@ -30,7 +43,7 @@ import { ToastService } from '../services/toast.service';
             </div>
             <div class="flex flex-col items-center">
               <mat-icon class="text-amber-500 mb-2" style="transform: scale(1.5);">payments</mat-icon>
-              <span>Düzenli Ödeme</span>
+              <span>Değerinde Fiyat</span>
             </div>
           </div>
         </div>
@@ -53,6 +66,27 @@ import { ToastService } from '../services/toast.service';
             } @else {
               <form [formGroup]="partnerForm" (ngSubmit)="onSubmit()" class="space-y-6">
                 
+                <!-- İşlem Tipi -->
+                <div class="space-y-4">
+                  <h3 class="text-lg font-semibold text-slate-800 border-b pb-2">İşlem Tipi</h3>
+                  <div class="flex gap-4">
+                    <label class="flex-1 relative cursor-pointer">
+                      <input type="radio" formControlName="intent" value="sell" class="peer sr-only">
+                      <div class="p-4 border-2 border-slate-200 rounded-xl text-center hover:bg-slate-50 peer-checked:border-amber-500 peer-checked:bg-amber-50 transition-all">
+                        <mat-icon class="text-slate-400 peer-checked:text-amber-500 mb-2" style="transform: scale(1.5);">sell</mat-icon>
+                        <div class="font-bold text-slate-700 peer-checked:text-amber-700">Aracımı Satmak İstiyorum</div>
+                      </div>
+                    </label>
+                    <label class="flex-1 relative cursor-pointer">
+                      <input type="radio" formControlName="intent" value="rent" class="peer sr-only">
+                      <div class="p-4 border-2 border-slate-200 rounded-xl text-center hover:bg-slate-50 peer-checked:border-amber-500 peer-checked:bg-amber-50 transition-all">
+                        <mat-icon class="text-slate-400 peer-checked:text-amber-500 mb-2" style="transform: scale(1.5);">car_rental</mat-icon>
+                        <div class="font-bold text-slate-700 peer-checked:text-amber-700">Aracımı Kiraya Vermek İstiyorum</div>
+                      </div>
+                    </label>
+                  </div>
+                </div>
+
                 <!-- Kişisel Bilgiler -->
                 <div class="space-y-4">
                   <h3 class="text-lg font-semibold text-slate-800 border-b pb-2">Kişisel Bilgiler</h3>
@@ -93,6 +127,43 @@ import { ToastService } from '../services/toast.service';
                       <input type="number" formControlName="carMileage" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="Örn: 45000">
                     </div>
                   </div>
+
+                  <!-- With Driver Option -->
+                  <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                      <input type="checkbox" formControlName="withDriver" class="w-5 h-5 text-amber-600 rounded border-slate-300 focus:ring-amber-500">
+                      <div class="flex flex-col">
+                        <span class="font-bold text-slate-900">Şoförlü Hizmet Verebilir mi?</span>
+                        <span class="text-xs text-slate-500">Aracınızla birlikte şoförlük hizmeti de sunmak istiyorsanız işaretleyin.</span>
+                      </div>
+                    </label>
+                  </div>
+
+                  <!-- File Upload Section -->
+                  <div class="space-y-2">
+                    <label class="block text-sm font-medium text-slate-700">Araç Fotoğrafları, Video veya Belgeler</label>
+                    <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-amber-500 transition-colors cursor-pointer bg-slate-50 relative group" (click)="fileInput.click()">
+                      <input #fileInput type="file" (change)="onFileSelected($event)" multiple class="hidden" accept="image/*,video/*,.pdf,.doc,.docx">
+                      <mat-icon class="text-slate-400 group-hover:text-amber-500 mb-2" style="transform: scale(2);">cloud_upload</mat-icon>
+                      <p class="text-slate-600 font-medium">Dosyaları buraya bırakın veya tıklayın</p>
+                      <p class="text-xs text-slate-400 mt-1">Görsel, Video veya PDF (Maks. 50MB)</p>
+                    </div>
+                    
+                    @if (selectedFiles().length > 0) {
+                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mt-4">
+                        @for (file of selectedFiles(); track $index) {
+                          <div class="relative bg-white border border-slate-200 rounded-lg p-2 flex items-center gap-2 group">
+                            <mat-icon class="text-slate-400 text-sm">{{ getFileIcon(file.type) }}</mat-icon>
+                            <span class="text-xs text-slate-600 truncate flex-1">{{ file.name }}</span>
+                            <button type="button" (click)="removeFile($index); $event.stopPropagation()" class="text-rose-500 hover:bg-rose-50 rounded-full p-1">
+                              <mat-icon class="text-sm">close</mat-icon>
+                            </button>
+                          </div>
+                        }
+                      </div>
+                    }
+                  </div>
+
                   <div>
                     <label class="block text-sm font-medium text-slate-700 mb-1">Ek Notlar</label>
                     <textarea formControlName="notes" rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500" placeholder="Aracınız hakkında eklemek istedikleriniz..."></textarea>
@@ -139,11 +210,18 @@ export class ListYourCarComponent {
   private fb = inject(FormBuilder);
   private carService = inject(CarService);
   private toastService = inject(ToastService);
+  private router = inject(Router);
 
   isSubmitting = signal(false);
   submitSuccess = signal(false);
+  selectedFiles = signal<File[]>([]);
+
+  goBack() {
+    this.router.navigate(['/']);
+  }
 
   partnerForm = this.fb.group({
+    intent: ['rent', Validators.required],
     name: ['', Validators.required],
     phone: ['', Validators.required],
     email: [''],
@@ -151,10 +229,29 @@ export class ListYourCarComponent {
     carModel: ['', Validators.required],
     carYear: ['', [Validators.required, Validators.min(2000), Validators.max(new Date().getFullYear() + 1)]],
     carMileage: ['', Validators.required],
+    withDriver: [false],
     notes: [''],
     acceptTerms: [false, Validators.requiredTrue],
     acceptKvkk: [false, Validators.requiredTrue]
   });
+
+  onFileSelected(event: any) {
+    const files = event.target.files;
+    if (files) {
+      this.selectedFiles.update(current => [...current, ...Array.from(files) as File[]]);
+    }
+  }
+
+  removeFile(index: number) {
+    this.selectedFiles.update(current => current.filter((_, i) => i !== index));
+  }
+
+  getFileIcon(type: string): string {
+    if (type.includes('image')) return 'image';
+    if (type.includes('video')) return 'videocam';
+    if (type.includes('pdf')) return 'picture_as_pdf';
+    return 'insert_drive_file';
+  }
 
   async onSubmit() {
     if (this.partnerForm.valid) {
@@ -168,11 +265,12 @@ export class ListYourCarComponent {
           carBrand: `${formValue.carBrand} ${formValue.carModel}`,
           modelYear: Number(formValue.carYear),
           km: Number(formValue.carMileage),
-          description: formValue.notes || ''
+          description: `${formValue.notes || ''} | Şoförlü: ${formValue.withDriver ? 'Evet' : 'Hayır'} | Dosya Sayısı: ${this.selectedFiles().length}`
         };
         
         await this.carService.submitPartnerRequest(requestData as any);
         this.submitSuccess.set(true);
+        this.selectedFiles.set([]);
       } catch (error) {
         console.error('Error submitting partner request:', error);
         this.toastService.show('Başvuru gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin veya bizimle iletişime geçin.', 'error');
@@ -189,7 +287,12 @@ export class ListYourCarComponent {
   }
 
   resetForm() {
-    this.partnerForm.reset();
+    this.partnerForm.reset({
+      withDriver: false,
+      acceptTerms: false,
+      acceptKvkk: false
+    });
+    this.selectedFiles.set([]);
     this.submitSuccess.set(false);
   }
 }

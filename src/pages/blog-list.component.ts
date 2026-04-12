@@ -1,20 +1,32 @@
 
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { CarService } from '../services/car.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-blog-list',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatIconModule],
   template: `
-    <div class="bg-slate-50 min-h-screen pt-28 pb-20 font-sans">
-       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="text-center mb-16">
-            <h1 class="font-serif text-4xl font-bold text-slate-900 mb-4">Alperler Keşif Rehberi</h1>
-            <p class="text-slate-500 max-w-2xl mx-auto">Yüksekova'nın doğası, tarihi ve araç kiralama dünyasına dair her şey.</p>
+    <div class="bg-slate-50 min-h-screen font-sans">
+      <!-- Sticky Module Header -->
+      <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="h-16 flex items-center gap-3">
+            <button (click)="goBack()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 shrink-0" aria-label="Geri Dön">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1 class="text-lg font-bold text-slate-900">Alperler Keşif Rehberi</h1>
           </div>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="text-center mb-16">
+          <p class="text-slate-500 max-w-2xl mx-auto">Yüksekova'nın doğası, tarihi ve araç kiralama dünyasına dair her şey.</p>
+        </div>
           
           <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
              @for (post of blogPosts(); track post.id) {
@@ -45,5 +57,10 @@ import { CarService } from '../services/car.service';
 })
 export class BlogListComponent {
   carService = inject(CarService);
+  router = inject(Router);
   blogPosts = this.carService.getBlogPosts();
+
+  goBack() {
+    this.router.navigate(['/']);
+  }
 }

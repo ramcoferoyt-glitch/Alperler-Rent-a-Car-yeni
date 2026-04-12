@@ -43,7 +43,7 @@ import { CarService } from '../../services/car.service';
           <div class="w-full max-w-[440px] bg-white p-8 md:p-10 rounded-3xl shadow-2xl border border-slate-100 animate-fade-in-up">
               <div class="text-center mb-10">
                   <span class="bg-slate-800 text-white text-[10px] font-black px-3 py-1.5 rounded-full uppercase tracking-widest mb-4 inline-block">Yönetici Paneli</span>
-                  <h2 class="text-3xl font-bold text-slate-900">Giriş Yapın 👋</h2>
+                  <h2 class="text-3xl font-bold text-slate-900">Giriş Yapın</h2>
                   <p class="text-slate-500 mt-2 text-sm">Devam etmek için yetkili hesap bilgilerinizle oturum açın.</p>
               </div>
 

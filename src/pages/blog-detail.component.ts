@@ -1,27 +1,37 @@
 
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute, RouterLink, Router } from '@angular/router';
 import { CarService, BlogPost } from '../services/car.service';
+import { UiService } from '../services/ui.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-blog-detail',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, MatIconModule],
   template: `
     <div class="bg-white min-h-screen font-sans">
+      <!-- Sticky Module Header -->
+      <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="h-16 flex items-center gap-3">
+            <button (click)="goBack()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 shrink-0" aria-label="Geri Dön">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1 class="text-lg font-bold text-slate-900 truncate">{{ post()?.title || 'Blog Yazısı' }}</h1>
+          </div>
+        </div>
+      </div>
+
       @if (post()) {
         <!-- Hero Image -->
-        <div class="relative h-[50vh] w-full">
+        <div class="relative h-[40vh] w-full">
            <img [src]="post()!.image" [alt]="post()!.title" class="object-cover w-full h-full brightness-50">
            <div class="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-transparent to-transparent"></div>
            <div class="absolute bottom-0 left-0 w-full p-8 md:p-16">
               <div class="max-w-4xl mx-auto">
-                 <a routerLink="/" class="inline-flex items-center text-amber-400 text-xs font-bold uppercase tracking-widest mb-4 hover:text-white transition-colors">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
-                    Ana Sayfaya Dön
-                 </a>
-                 <h1 class="text-4xl md:text-6xl font-serif font-bold text-white leading-tight mb-4">{{ post()!.title }}</h1>
+                 <h1 class="text-3xl md:text-5xl font-serif font-bold text-white leading-tight mb-4">{{ post()!.title }}</h1>
                  <div class="flex items-center text-slate-300 text-sm font-medium space-x-4">
                     <span class="flex items-center">
                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
@@ -69,9 +79,9 @@ import { CarService, BlogPost } from '../services/car.service';
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     Diğer Yazılar
                  </a>
-                 <a routerLink="/contact" class="bg-slate-900 text-white px-6 py-3 rounded-sm font-bold uppercase tracking-widest text-xs hover:bg-amber-500 hover:text-slate-900 transition-colors shadow-lg">
+                 <button (click)="openContact()" class="bg-slate-900 text-white px-6 py-3 rounded-sm font-bold uppercase tracking-widest text-xs hover:bg-amber-500 hover:text-slate-900 transition-colors shadow-lg">
                     Hemen İletişime Geçin
-                 </a>
+                 </button>
               </div>
            </div>
         </div>
@@ -85,9 +95,15 @@ import { CarService, BlogPost } from '../services/car.service';
 })
 export class BlogDetailComponent implements OnInit {
   route = inject(ActivatedRoute);
+  router = inject(Router);
   carService = inject(CarService);
+  uiService = inject(UiService);
   post = signal<BlogPost | undefined>(undefined);
   showCopyMsg = signal(false);
+
+  goBack() {
+    this.router.navigate(['/blog']);
+  }
 
   ngOnInit() {
     this.route.params.subscribe(params => {
@@ -97,6 +113,10 @@ export class BlogDetailComponent implements OnInit {
         window.scrollTo(0,0);
       }
     });
+  }
+
+  openContact() {
+    this.uiService.toggleContact(true);
   }
 
   sharePost() {

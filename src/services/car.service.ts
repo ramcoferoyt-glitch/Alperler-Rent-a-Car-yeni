@@ -1,24 +1,8 @@
 
 import { Injectable, signal, computed, effect } from '@angular/core';
-import { Car } from '../models/car.model';
+import { Vehicle, Car, SaleCar } from '../models/car.model';
 import { SiteConfig, TeamMember } from '../models/site-config.model';
 import { GoogleGenAI } from "@google/genai";
-
-export interface SaleCar {
-  id: number;
-  brand: string;
-  model: string;
-  year: number;
-  km: number;
-  price: number;
-  image: string;
-  images?: string[];
-  description: string;
-  features: string[];
-  expertReport?: string;
-  transmission: 'Otomatik' | 'Manuel';
-  fuel: 'Benzin' | 'Dizel' | 'Hibrit';
-}
 
 export interface Tour {
   id: number;
@@ -60,6 +44,7 @@ export interface BookingRequest {
   withDriver?: boolean;
   pickupLocation?: string;
   rentalDuration?: string;
+  notes?: string;
 }
 
 export interface PartnerRequest {
@@ -100,7 +85,7 @@ Ailenin birleştirici gücü olan Genel Müdürümüz Hicran Alper, bir anne şe
 export class CarService {
   // --- STATE SIGNALS ---
   private _bookingRequest = signal<BookingRequest | null>(null);
-  private _favoriteCars = signal<number[]>([]);
+  private _favoriteCars = signal<(number|string)[]>([]);
   private _visitCount = signal<number>(0); 
   private _partnerRequests = signal<PartnerRequest[]>([]);
   private _feedbacks = signal<Feedback[]>([]);
@@ -162,7 +147,7 @@ export class CarService {
         { id: 6, name: 'İmran Alper', role: 'Müşteri İlişkileri', description: 'Rezervasyon & Transfer Şoförü', image: 'https://picsum.photos/id/91/200/200' }
     ],
 
-    footerText: "Yüksekova'da güvenilir araç kiralama hizmetiyle hayallerinizin yol arkadaşı. Premium hizmet, güvenli yolculuk.",
+    footerText: "Your travel companion with reliable car rental service in Yüksekova. Premium service, safe journey.",
     kvkkText: `
 # KİŞİSEL VERİLERİN KORUNMASI VE İŞLENMESİ HAKKINDA AYDINLATMA METNİ
 
@@ -425,39 +410,43 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
   ]);
 
   // 2. Cars
-  private _cars = signal<Car[]>([
+  private _inventory = signal<Vehicle[]>([
+
     // SUV
     { 
-        id: 1, brand: 'Nissan', model: 'Qashqai', type: 'SUV', transmission: 'Otomatik', fuel: 'Dizel', price: 4500, 
+        id: 1, category: 'RENTAL', year: 2023, brand: 'Nissan', model: 'Qashqai', type: 'SUV', transmission: 'Otomatik', fuel: 'Dizel', price: 4500, 
         image: 'https://images.unsplash.com/photo-1599940824399-b87987ce0799?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1599940824399-b87987ce0799?q=80&w=1000&auto=format&fit=crop',
             'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop',
             'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop'
         ],
-        seats: 5, features: ['Cam Tavan', 'Geri Görüş', 'Start-Stop'], isAvailable: true 
+        seats: 5, features: ['Cam Tavan', 'Geri Görüş', 'Start-Stop'], isAvailable: true,
+        isFeatured: true, isPopular: true, badge: 'FIRSAT'
     },
     { 
-        id: 2, brand: 'Peugeot', model: '3008', type: 'SUV', transmission: 'Otomatik', fuel: 'Dizel', price: 4800, 
+        id: 2, category: 'RENTAL', year: 2023, brand: 'Peugeot', model: '3008', type: 'SUV', transmission: 'Otomatik', fuel: 'Dizel', price: 4800, 
         image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop',
             'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1000&auto=format&fit=crop',
             'https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=1000&auto=format&fit=crop'
         ],
-        seats: 5, features: ['Hayalet Ekran', 'E-Toggle', 'Şerit Takip'], isAvailable: true 
+        seats: 5, features: ['Hayalet Ekran', 'E-Toggle', 'Şerit Takip'], isAvailable: true,
+        isFeatured: true, isPopular: true
     },
     { 
-        id: 3, brand: 'Volkswagen', model: 'Tiguan', type: 'SUV', transmission: 'Otomatik', fuel: 'Benzin', price: 5200, 
+        id: 3, category: 'RENTAL', year: 2023, brand: 'Volkswagen', model: 'Tiguan', type: 'SUV', transmission: 'Otomatik', fuel: 'Benzin', price: 5200, 
         image: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop',
             'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop'
         ],
-        seats: 5, features: ['IQ.Light', 'Cam Tavan', 'Apple CarPlay'], isAvailable: false 
+        seats: 5, features: ['IQ.Light', 'Cam Tavan', 'Apple CarPlay'], isAvailable: false,
+        isFeatured: true
     },
     { 
-        id: 4, brand: 'Dacia', model: 'Duster', type: 'SUV', transmission: 'Manuel', fuel: 'Dizel', price: 3500, 
+        id: 4, category: 'RENTAL', year: 2023, brand: 'Dacia', model: 'Duster', type: 'SUV', transmission: 'Manuel', fuel: 'Dizel', price: 3500, 
         image: 'https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1621007947382-bb3c3968e3bb?q=80&w=1000&auto=format&fit=crop',
@@ -468,7 +457,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
 
     // Sedan
     { 
-        id: 5, brand: 'Volkswagen', model: 'Passat', type: 'Sedan', transmission: 'Otomatik', fuel: 'Dizel', price: 4200, 
+        id: 5, category: 'RENTAL', year: 2023, brand: 'Volkswagen', model: 'Passat', type: 'Sedan', transmission: 'Otomatik', fuel: 'Dizel', price: 4200, 
         image: 'https://images.unsplash.com/photo-1626847037657-fd3622613ce3?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1626847037657-fd3622613ce3?q=80&w=1000&auto=format&fit=crop',
@@ -477,7 +466,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Makam Konforu', 'Deri Koltuk', 'Geniş İç Hacim'], isAvailable: true 
     },
     { 
-        id: 6, brand: 'Toyota', model: 'Corolla', type: 'Sedan', transmission: 'Otomatik', fuel: 'Hibrit', price: 3800, 
+        id: 6, category: 'RENTAL', year: 2023, brand: 'Toyota', model: 'Corolla', type: 'Sedan', transmission: 'Otomatik', fuel: 'Hibrit', price: 3800, 
         image: 'https://images.unsplash.com/photo-1623869675781-80aa31012a5a?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1623869675781-80aa31012a5a?q=80&w=1000&auto=format&fit=crop',
@@ -486,7 +475,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Yakıt Cimrisi', 'Sessiz Sürüş', 'Güvenlik Paketi'], isAvailable: true 
     },
     { 
-        id: 7, brand: 'Renault', model: 'Megane', type: 'Sedan', transmission: 'Otomatik', fuel: 'Dizel', price: 3600, 
+        id: 7, category: 'RENTAL', year: 2023, brand: 'Renault', model: 'Megane', type: 'Sedan', transmission: 'Otomatik', fuel: 'Dizel', price: 3600, 
         image: 'https://images.unsplash.com/photo-1617469165786-8007ed3caa37?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1617469165786-8007ed3caa37?q=80&w=1000&auto=format&fit=crop',
@@ -495,7 +484,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Tesla Ekran', 'Led Far', 'Sport Mod'], isAvailable: true 
     },
     { 
-        id: 8, brand: 'Fiat', model: 'Egea Cross', type: 'Sedan', transmission: 'Manuel', fuel: 'Benzin', price: 2800, 
+        id: 8, category: 'RENTAL', year: 2023, brand: 'Fiat', model: 'Egea Cross', type: 'Sedan', transmission: 'Manuel', fuel: 'Benzin', price: 2800, 
         image: 'https://images.unsplash.com/photo-1655320609876-4c8e5644d184?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1655320609876-4c8e5644d184?q=80&w=1000&auto=format&fit=crop',
@@ -506,7 +495,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
 
     // Pickup
     { 
-        id: 9, brand: 'Toyota', model: 'Hilux 4x4', type: 'Pickup', transmission: 'Otomatik', fuel: 'Dizel', price: 5500, 
+        id: 9, category: 'RENTAL', year: 2023, brand: 'Toyota', model: 'Hilux 4x4', type: 'Pickup', transmission: 'Otomatik', fuel: 'Dizel', price: 5500, 
         image: 'https://images.unsplash.com/photo-1605218457336-92e4a6001a0d?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1605218457336-92e4a6001a0d?q=80&w=1000&auto=format&fit=crop',
@@ -515,7 +504,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Arazi Modu', 'Diferansiyel Kilidi', 'Güçlü Motor'], isAvailable: true 
     },
     { 
-        id: 10, brand: 'Ford', model: 'Ranger Wildtrak', type: 'Pickup', transmission: 'Otomatik', fuel: 'Dizel', price: 6000, 
+        id: 10, category: 'RENTAL', year: 2023, brand: 'Ford', model: 'Ranger Wildtrak', type: 'Pickup', transmission: 'Otomatik', fuel: 'Dizel', price: 6000, 
         image: 'https://images.unsplash.com/photo-1566008885218-90abf9200ddb?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1566008885218-90abf9200ddb?q=80&w=1000&auto=format&fit=crop',
@@ -524,7 +513,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Off-Road', 'Isıtmalı Koltuk', '4x4 Çekiş'], isAvailable: true 
     },
     { 
-        id: 11, brand: 'Mitsubishi', model: 'L200', type: 'Pickup', transmission: 'Manuel', fuel: 'Dizel', price: 5000, 
+        id: 11, category: 'RENTAL', year: 2023, brand: 'Mitsubishi', model: 'L200', type: 'Pickup', transmission: 'Manuel', fuel: 'Dizel', price: 5000, 
         image: 'https://images.unsplash.com/photo-1598545534767-b589ee269027?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1598545534767-b589ee269027?q=80&w=1000&auto=format&fit=crop',
@@ -533,7 +522,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Dayanıklı', 'Yük Taşıma', 'Yüksek Tork'], isAvailable: true 
     },
     { 
-        id: 12, brand: 'Isuzu', model: 'D-Max', type: 'Pickup', transmission: 'Otomatik', fuel: 'Dizel', price: 5200, 
+        id: 12, category: 'RENTAL', year: 2023, brand: 'Isuzu', model: 'D-Max', type: 'Pickup', transmission: 'Otomatik', fuel: 'Dizel', price: 5200, 
         image: 'https://images.unsplash.com/photo-1632823469860-42137e0c092d?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1632823469860-42137e0c092d?q=80&w=1000&auto=format&fit=crop',
@@ -544,7 +533,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
 
     // Hatchback
     { 
-        id: 13, brand: 'Renault', model: 'Clio', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3000, 
+        id: 13, category: 'RENTAL', year: 2023, brand: 'Renault', model: 'Clio', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3000, 
         image: 'https://images.unsplash.com/photo-1635785137860-e8c603e73a2b?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1635785137860-e8c603e73a2b?q=80&w=1000&auto=format&fit=crop',
@@ -553,7 +542,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Pratik', 'Ekonomik', 'Kolay Park'], isAvailable: true 
     },
     { 
-        id: 14, brand: 'Hyundai', model: 'i20', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3100, 
+        id: 14, category: 'RENTAL', year: 2023, brand: 'Hyundai', model: 'i20', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3100, 
         image: 'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1601362840469-51e4d8d58785?q=80&w=1000&auto=format&fit=crop',
@@ -562,7 +551,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Sportif', 'Geniş Ekran', 'Şerit Takip'], isAvailable: true 
     },
     { 
-        id: 15, brand: 'Volkswagen', model: 'Polo', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3400, 
+        id: 15, category: 'RENTAL', year: 2023, brand: 'Volkswagen', model: 'Polo', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3400, 
         image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop',
@@ -571,7 +560,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Konforlu', 'DSG Şanzıman', 'Kaliteli İç Mekan'], isAvailable: true 
     },
     { 
-        id: 16, brand: 'Peugeot', model: '208', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3300, 
+        id: 16, category: 'RENTAL', year: 2023, brand: 'Peugeot', model: '208', type: 'Hatchback', transmission: 'Otomatik', fuel: 'Benzin', price: 3300, 
         image: 'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1542362567-b07e54358753?q=80&w=1000&auto=format&fit=crop',
@@ -579,10 +568,37 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         ],
         seats: 5, features: ['i-Cockpit', 'Aslan Dişi Led', 'Kompakt'], isAvailable: true 
     },
+    { 
+        id: 21, category: 'RENTAL', year: 2024, brand: 'Skoda', model: 'Octavia', type: 'Sedan', transmission: 'Otomatik', fuel: 'Hibrit', price: 4500, 
+        image: 'https://images.unsplash.com/photo-1603811463137-67c87023c683?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1603811463137-67c87023c683?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop'
+        ],
+        seats: 5, features: ['Geniş Bagaj', 'Matrix Led', 'Adaptif Hız Sabitleyici'], isAvailable: true 
+    },
+    { 
+        id: 22, category: 'RENTAL', year: 2024, brand: 'Chery', model: 'Tiggo 8 Pro', type: 'SUV', transmission: 'Otomatik', fuel: 'Benzin', price: 5500, 
+        image: 'https://images.unsplash.com/photo-1632823469860-42137e0c092d?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1632823469860-42137e0c092d?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop'
+        ],
+        seats: 7, features: ['7 Koltuk', 'Panoramik Tavan', '360 Kamera'], isAvailable: true 
+    },
+    { 
+        id: 23, category: 'RENTAL', year: 2024, brand: 'MG', model: 'HS', type: 'SUV', transmission: 'Otomatik', fuel: 'Benzin', price: 4800, 
+        image: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1000&auto=format&fit=crop'
+        ],
+        seats: 5, features: ['Deri Koltuk', 'Elektrikli Bagaj', 'Kör Nokta'], isAvailable: true 
+    },
     
     // Luxury
     { 
-        id: 17, brand: 'Mercedes-Benz', model: 'E-Class', type: 'Luxury', transmission: 'Otomatik', fuel: 'Dizel', price: 8500, 
+        id: 17, category: 'RENTAL', year: 2023, brand: 'Mercedes-Benz', model: 'E-Class', type: 'Luxury', transmission: 'Otomatik', fuel: 'Dizel', price: 8500, 
         image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop',
@@ -591,7 +607,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Makam Aracı', 'Masajlı Koltuk', 'Vakum Kapı'], isAvailable: true 
     },
     { 
-        id: 18, brand: 'BMW', model: '520i', type: 'Luxury', transmission: 'Otomatik', fuel: 'Benzin', price: 8500, 
+        id: 18, category: 'RENTAL', year: 2023, brand: 'BMW', model: '520i', type: 'Luxury', transmission: 'Otomatik', fuel: 'Benzin', price: 8500, 
         image: 'https://images.unsplash.com/photo-1555215695-3004980adade?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1555215695-3004980adade?q=80&w=1000&auto=format&fit=crop',
@@ -600,7 +616,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['M Sport', 'Harman Kardon', 'Laser Light'], isAvailable: true 
     },
     { 
-        id: 19, brand: 'Audi', model: 'A6', type: 'Luxury', transmission: 'Otomatik', fuel: 'Dizel', price: 8200, 
+        id: 19, category: 'RENTAL', year: 2023, brand: 'Audi', model: 'A6', type: 'Luxury', transmission: 'Otomatik', fuel: 'Dizel', price: 8200, 
         image: 'https://images.unsplash.com/photo-1606152421811-991d589363bd?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1606152421811-991d589363bd?q=80&w=1000&auto=format&fit=crop',
@@ -609,7 +625,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         seats: 5, features: ['Quattro', 'Matrix Led', 'Çift Ekran'], isAvailable: true 
     },
     { 
-        id: 21, brand: 'Volvo', model: 'S90', type: 'Luxury', transmission: 'Otomatik', fuel: 'Dizel', price: 8000, 
+        id: 20, category: 'RENTAL', year: 2023, brand: 'Volvo', model: 'S90', type: 'Luxury', transmission: 'Otomatik', fuel: 'Dizel', price: 8000, 
         image: 'https://images.unsplash.com/photo-1619712068019-d10823490484?q=80&w=1000&auto=format&fit=crop', 
         images: [
             'https://images.unsplash.com/photo-1619712068019-d10823490484?q=80&w=1000&auto=format&fit=crop',
@@ -617,12 +633,620 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
         ],
         seats: 5, features: ['En Güvenli', 'Otonom Sürüş', 'Bowers & Wilkins'], isAvailable: true 
     }
+  ,
+
+    { 
+        id: 1309148393, category: 'SALE', 
+        brand: 'Mercedes-Benz', 
+        model: 'C 180 AMG', 
+        series: 'C Serisi',
+        year: 2012, 
+        km: 132000, 
+        price: 1565000, 
+        image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: '2012 MODEL MERCEDES C180 AMG 7G-TRONIC 156 HP\n\nARACIMIZIN TÜM BAKIMLARI ZAMANINDA VE EKSİKSİZ YAPILMIŞTIR.\nİÇ VE DIŞ KOZMETİĞİ ÇOK İYİ DURUMDADIR.\n\nÖZELLİKLER:\n- PANORAMİK CAM TAVAN\n- AMG PAKET\n- 7 İLERİ ŞANZIMAN\n- DİJİTAL KLİMA\n- HIZ SABİTLEYİCİ\n- FAR VE YAĞMUR SENSÖRÜ\n- ÖN VE ARKA PARK SENSÖRÜ\n\nEKSPERTİZ:\nDEĞİŞEN PARÇASI YOKTUR.\nBEL ALTI BİRKAÇ PARÇA ÇİZİK BOYASI MEVCUTTUR.\nTRAMER KAYDI YOKTUR.', 
+        features: ['Cam Tavan', 'AMG Paket', '7G-Tronic', 'Hız Sabitleyici', 'Dijital Klima'], 
+        expertReport: 'Değişensiz, Bel Altı Boyalı', 
+        transmission: 'Otomatik', 
+        fuel: 'Benzin',
+        color: 'Beyaz',
+        engineVolume: '1595 cc',
+        enginePower: '156 HP',
+        drivetrain: 'Arkadan İtiş',
+        warranty: 'Yok',
+        damageStatus: 'Değişensiz',
+        badge: 'FIRSAT',
+        viewers: 45,
+        favCount: 128,
+        isPopular: true,
+        isPaintless: false,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: false,
+        paintedParts: 'Bel altı temizlik boyası mevcut',
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Deri/Kumaş Koltuklar', 'Çift Bölgeli Dijital Klima', 'F1 Vites', 'Hız Sabitleyici'],
+            exterior: ['AMG Jantlar', 'Panoramik Cam Tavan', 'Bi-Xenon Farlar', 'Gündüz Ledleri'],
+            multimedia: ['Bluetooth', 'CD Çalar', 'Aux/Usb'],
+            safety: ['ABS/ESP', 'Hava Yastıkları', 'Yokuş Kalkış Desteği', 'Park Sensörü']
+        },
+        fuelConsumption: '7.2 lt/100km',
+        acceleration: '8.9 sn',
+        maxSpeed: '223 km/s',
+        length: '4591 mm',
+        width: '1770 mm',
+        height: '1447 mm',
+        trunkVolume: '475 lt',
+        weight: '1495 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '66 lt',
+        torque: '250 Nm',
+        kaskoValue: '1.420.000 ₺',
+        cityFuelConsumption: '9.4 lt',
+        highwayFuelConsumption: '5.8 lt',
+        wheelSize: '18 inç',
+        tramer: 'Tramer Kaydı Yoktur',
+        damageExpertise: {
+          hood: 'original',
+          frontBumper: 'original',
+          rearBumper: 'original',
+          roof: 'original',
+          trunk: 'original',
+          frontLeftDoor: 'original',
+          frontRightDoor: 'original',
+          rearLeftDoor: 'original',
+          rearRightDoor: 'original',
+          frontLeftFender: 'original',
+          frontRightFender: 'original',
+          rearLeftFender: 'original',
+          rearRightFender: 'original'
+        }
+    },
+    { 
+        id: 100, category: 'SALE', 
+        brand: 'Mercedes-Benz', 
+        model: 'C 200 4MATIC AMG', 
+        year: 2023, 
+        km: 12000, 
+        price: 3850000, 
+        image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Hatasız, boyasız, sıfır ayarında. AMG paket, gece paketi. Kapalı garaj arabasıdır, içinde sigara içilmemiştir. Tüm bakımları yetkili serviste yapılmıştır.', 
+        features: ['Cam Tavan', 'Burmester', 'Otonom', '360 Kamera'], 
+        expertReport: 'Hatasız, Boyasız, Tramer Yok', 
+        transmission: 'Otomatik', 
+        fuel: 'Hibrit',
+        color: 'Metalik Siyah',
+        engineVolume: '1496 cc',
+        enginePower: '204 HP',
+        drivetrain: '4x4 (AWD)',
+        warranty: 'Garantili',
+        damageStatus: 'Hatasız / Boyasız',
+        badge: 'FIRSAT',
+        viewers: 12,
+        favCount: 243,
+        isLastCar: true,
+        isPriceDropped: true,
+        daysLeft: 3,
+        isPopular: true,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: true,
+        paintedParts: '',
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Deri Koltuklar', 'Isıtmalı Ön Koltuklar', 'Hafızalı Sürücü Koltuğu', 'Ambiyans Aydınlatma', 'Dijital Klima'],
+            exterior: ['AMG Gövde Tasarımı', '19 inç Alaşım Jantlar', 'Panoramik Cam Tavan', 'LED Yüksek Performanslı Farlar', 'Elektrikli Bagaj'],
+            multimedia: ['Burmester Ses Sistemi', 'Apple CarPlay', 'Android Auto', '12.3 inç Dijital Gösterge', 'Navigasyon'],
+            safety: ['Aktif Fren Yardımcısı', 'Şerit Takip Asistanı', 'Kör Nokta Uyarı Sistemi', '360 Derece Kamera', 'Yorgunluk Tespit Sistemi']
+        },
+        fuelConsumption: '6.8 lt/100km',
+        acceleration: '7.3 sn',
+        maxSpeed: '246 km/s',
+        length: '4751 mm',
+        width: '1820 mm',
+        height: '1437 mm',
+        trunkVolume: '455 lt',
+        weight: '1650 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '66 lt',
+        torque: '300 Nm',
+        kaskoValue: '3.450.000 ₺',
+        cityFuelConsumption: '8.2 lt',
+        highwayFuelConsumption: '5.8 lt',
+        wheelSize: '19 inç',
+        tramer: 'Tramer Kaydı Yoktur',
+        damageExpertise: {
+          hood: 'original',
+          frontBumper: 'original',
+          rearBumper: 'original',
+          roof: 'original',
+          trunk: 'original',
+          frontLeftDoor: 'original',
+          frontRightDoor: 'original',
+          rearLeftDoor: 'original',
+          rearRightDoor: 'original',
+          frontLeftFender: 'original',
+          frontRightFender: 'original',
+          rearLeftFender: 'original',
+          rearRightFender: 'original'
+        }
+    },
+    { 
+        id: 101, category: 'SALE', 
+        brand: 'Peugeot', 
+        model: '508 1.5 BlueHDi GT', 
+        year: 2022, 
+        km: 45000, 
+        price: 1850000, 
+        image: 'https://images.unsplash.com/photo-1620012253295-c15cb3e71240?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1620012253295-c15cb3e71240?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1606016159991-dfe4f2746ad5?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'İlk sahibinden, yetkili servis bakımlı Peugeot 508 GT. Focal ses sistemi, gece görüş asistanı ve masajlı koltuklar mevcuttur. İçerisinde sigara içilmemiştir.', 
+        features: ['Focal Ses Sistemi', 'Gece Görüş', 'Masajlı Koltuk', 'Cam Tavan'], 
+        expertReport: 'Sol arka kapı çizik boyası. Tramer: 4.500 TL', 
+        transmission: 'Otomatik', 
+        fuel: 'Dizel',
+        color: 'Sedefli Beyaz',
+        engineVolume: '1499 cc',
+        enginePower: '130 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Garantili',
+        damageStatus: '1 Parça Boyalı',
+        badge: 'ACİL',
+        viewers: 9,
+        favCount: 156,
+        isLastCar: false,
+        isPriceDropped: false,
+        daysLeft: 0,
+        isPopular: true,
+        isFeatured: true,
+        isPaintless: false,
+        isReplaceFree: true,
+        isDamageFree: false,
+        hasWarranty: true,
+        paintedParts: 'Sol arka kapı boyalı',
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Nappa Deri Koltuklar', 'Masaj Fonksiyonlu Ön Koltuklar', 'Isıtmalı Koltuklar', 'i-Cockpit', 'Focal Premium Müzik Sistemi'],
+            exterior: ['19 inç Augusta Jantlar', 'Full LED Farlar', 'Çerçevesiz Kapılar', 'Elektrikli Bagaj Kapağı'],
+            multimedia: ['10 inç Dokunmatik Ekran', 'Apple CarPlay / Android Auto', 'Kablosuz Şarj', '3D Navigasyon'],
+            safety: ['Gece Görüş Asistanı (Night Vision)', 'Adaptif Hız Sabitleyici', 'Şerit Konumlandırma', 'Kör Nokta Uyarı']
+        },
+        fuelConsumption: '4.7 lt/100km',
+        acceleration: '9.7 sn',
+        maxSpeed: '208 km/s',
+        length: '4750 mm',
+        width: '1859 mm',
+        height: '1403 mm',
+        trunkVolume: '487 lt',
+        weight: '1502 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '55 lt'
+    },
+    { 
+        id: 102, category: 'SALE', 
+        brand: 'Renault', 
+        model: 'Megane 1.3 TCe Icon', 
+        year: 2023, 
+        km: 15000, 
+        price: 1350000, 
+        image: 'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1609521263047-f8f205293f24?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Sıfır ayarında, hatasız boyasız Renault Megane Sedan Icon paket. Yedek anahtarı ve kitapçıkları mevcuttur. Garantisi devam etmektedir.', 
+        features: ['Hayalet Ekran', 'Geri Görüş Kamerası', 'Anahtarsız Giriş', 'LED Far'], 
+        expertReport: 'Hatasız, Boyasız. Tramer kaydı yoktur.', 
+        transmission: 'Otomatik', 
+        fuel: 'Benzin',
+        color: 'Gümüş Gri',
+        engineVolume: '1332 cc',
+        enginePower: '140 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Garantili',
+        damageStatus: 'Hatasız / Boyasız',
+        badge: 'YENİ',
+        viewers: 5,
+        favCount: 89,
+        isLastCar: false,
+        isPriceDropped: false,
+        isFeatured: true,
+        daysLeft: 0,
+        isPopular: false,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: true,
+        paintedParts: '',
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Yarı Deri Koltuklar', 'Çift Bölgeli Dijital Klima', 'Deri Direksiyon', 'Ambiyans Aydınlatma'],
+            exterior: ['17 inç Elmas Kesim Jantlar', 'Pure Vision Full LED Farlar', 'C Şeklinde Gündüz Farları', 'Karartılmış Arka Camlar'],
+            multimedia: ['EASY LINK 7 inç Multimedya', 'Apple CarPlay', 'Android Auto', 'Bluetooth Bağlantısı'],
+            safety: ['Geri Görüş Kamerası', 'Ön ve Arka Park Sensörü', 'Yokuş Kalkış Desteği', 'Hız Sabitleyici ve Sınırlayıcı']
+        },
+        fuelConsumption: '5.4 lt/100km',
+        acceleration: '9.0 sn',
+        maxSpeed: '205 km/s',
+        length: '4632 mm',
+        width: '1814 mm',
+        height: '1443 mm',
+        trunkVolume: '550 lt',
+        weight: '1361 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '50 lt'
+    },
+    { 
+        id: 103, category: 'SALE', 
+        brand: 'Volkswagen', 
+        model: 'Passat 1.5 TSI Elegance', 
+        year: 2021, 
+        km: 62000, 
+        price: 1950000, 
+        image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Elegance paket, cam tavanlı Passat. Tüm bakımları zamanında yapılmıştır.', 
+        features: ['Cam Tavan', 'Matrix Led', 'Koltuk Isıtma'], 
+        expertReport: 'Hatasız, Boyasız.', 
+        transmission: 'Otomatik', 
+        fuel: 'Benzin',
+        color: 'Derin Siyah',
+        engineVolume: '1498 cc',
+        enginePower: '150 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Bitti',
+        damageStatus: 'Hatasız',
+        badge: '',
+        viewers: 18,
+        favCount: 312,
+        isLastCar: false,
+        isPriceDropped: true,
+        daysLeft: 0,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: false,
+        paintedParts: '',
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Deri/Alcantara Koltuklar', 'Isıtmalı Ön Koltuklar', '3 Bölgeli Dijital Klima', 'Ambiyans Aydınlatma'],
+            exterior: ['18 inç Dartford Jantlar', 'IQ.Light LED Matrix Farlar', 'Panoramik Cam Tavan', 'Elektrikli Bagaj'],
+            multimedia: ['Discover Pro Navigasyon', 'App-Connect', 'Hayalet Gösterge'],
+            safety: ['Yaya Algılama', 'Adaptif Hız Sabitleyici', 'Park Asistanı']
+        },
+        fuelConsumption: '5.1 lt/100km',
+        acceleration: '8.7 sn',
+        maxSpeed: '220 km/s',
+        length: '4775 mm',
+        width: '1832 mm',
+        height: '1458 mm',
+        trunkVolume: '586 lt',
+        weight: '1455 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '66 lt'
+    },
+    { 
+        id: 104, category: 'SALE', 
+        brand: 'BMW', 
+        model: '320i Sedan M Sport', 
+        year: 2022, 
+        km: 32000, 
+        price: 2650000, 
+        image: 'https://images.unsplash.com/photo-1555215695-3004980adade?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1555215695-3004980adade?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Borusan çıkışlı, hatasız boyasız M Sport paket. Next 100 ekran, Harman Kardon ses sistemi mevcuttur.', 
+        features: ['M Sport', 'Harman Kardon', 'Next 100', 'Sunroof'], 
+        expertReport: 'Hatasız, Boyasız. Tramer kaydı yoktur.', 
+        transmission: 'Otomatik', 
+        fuel: 'Benzin',
+        color: 'Portimao Mavi',
+        engineVolume: '1597 cc',
+        enginePower: '170 HP',
+        drivetrain: 'Arkadan İtiş',
+        warranty: 'Garantili',
+        damageStatus: 'Hatasız',
+        badge: 'PREMIUM',
+        viewers: 25,
+        favCount: 412,
+        isLastCar: false,
+        isPriceDropped: false,
+        isFeatured: true,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: true,
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['M Deri Direksiyon', 'M Sport Koltuklar', 'Harman Kardon Ses Sistemi', 'Üç Bölgeli Otomatik Klima'],
+            exterior: ['18 inç M Alaşım Jantlar', 'M Aerodinamik Paket', 'BMW Laserlight', 'Elektrikli Cam Tavan'],
+            multimedia: ['BMW Live Cockpit Professional', 'Kablosuz Şarj', 'Apple CarPlay / Android Auto'],
+            safety: ['Sürüş Asistanı Professional', 'Park Asistanı Plus', 'Aktif Koruma']
+        }
+    },
+    { 
+        id: 105, category: 'SALE', 
+        brand: 'Audi', 
+        model: 'A3 Sportback 35 Turbo FSI Advanced', 
+        year: 2023, 
+        km: 12000, 
+        price: 1750000, 
+        image: 'https://images.unsplash.com/photo-1606152421811-991d589363bd?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1606152421811-991d589363bd?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1619712068019-d10823490484?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Sıfır ayarında, hatasız boyasız Audi A3. Advanced paket, cam tavanlı.', 
+        features: ['Cam Tavan', 'Matrix Led', 'Kayar Sinyal'], 
+        expertReport: 'Hatasız, Boyasız.', 
+        transmission: 'Otomatik', 
+        fuel: 'Benzin',
+        color: 'Navarra Mavi',
+        engineVolume: '1498 cc',
+        enginePower: '150 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Garantili',
+        damageStatus: 'Hatasız',
+        badge: 'YENİ',
+        viewers: 14,
+        favCount: 198,
+        isLastCar: false,
+        isPriceDropped: false,
+        isFeatured: true,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: true,
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Spor Koltuklar', 'Audi Virtual Cockpit Plus', 'Ambiyans Aydınlatma Plus'],
+            exterior: ['17 inç Alaşım Jantlar', 'Matrix LED Farlar', 'Panoramik Cam Tavan'],
+            multimedia: ['MMI Navigasyon Plus', 'Audi Smartphone Interface', 'Audi Phone Box Light'],
+            safety: ['Audi Pre Sense Front', 'Şerit Terk Uyarısı', 'Geri Görüş Kamerası']
+        }
+    },
+    { 
+        id: 106, category: 'SALE', 
+        brand: 'Mercedes-Benz', 
+        model: 'C 200 d AMG', 
+        year: 2021, 
+        km: 45000, 
+        price: 3150000, 
+        image: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1553260162-7183d46a97ac?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Yetkili servis bakımlı, AMG paket, imzalı seri. Hatasız boyasız, sıfır ayarında.', 
+        features: ['AMG Paket', 'Burmester Ses', 'Panoramik Tavan', 'Kör Nokta'], 
+        expertReport: 'Hatasız, Boyasız. Tramer kaydı yoktur.', 
+        transmission: 'Otomatik', 
+        fuel: 'Dizel',
+        color: 'Metalik Gri',
+        engineVolume: '1597 cc',
+        enginePower: '160 HP',
+        drivetrain: 'Arkadan İtiş',
+        warranty: 'Garantili',
+        damageStatus: 'Hatasız',
+        badge: 'PREMIUM',
+        viewers: 32,
+        favCount: 524,
+        isLastCar: false,
+        isPriceDropped: false,
+        isFeatured: true,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: true,
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['AMG Spor Koltuklar', 'Burmester Surround Ses Sistemi', '64 Renk Ambiyans Aydınlatma', 'Nappa Deri Direksiyon'],
+            exterior: ['19 inç AMG Jantlar', 'Multibeam LED Farlar', 'Panoramik Cam Tavan', 'AMG Gövde Tasarımı'],
+            multimedia: ['MBUX Multimedya Sistemi', '12.3 inç Dijital Gösterge', 'Kablosuz Şarj'],
+            safety: ['Aktif Fren Yardımcısı', 'Kör Nokta Yardımcısı', 'Şerit Takip Yardımcısı']
+        },
+        fuelConsumption: '4.4 lt/100km',
+        acceleration: '7.9 sn',
+        maxSpeed: '226 km/s',
+        length: '4686 mm',
+        width: '1810 mm',
+        height: '1442 mm',
+        trunkVolume: '455 lt',
+        weight: '1595 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '66 lt'
+    },
+    { 
+        id: 107, category: 'SALE', 
+        brand: 'Volkswagen', 
+        model: 'Passat 1.5 TSI Business', 
+        year: 2022, 
+        km: 28000, 
+        price: 1850000, 
+        image: 'https://images.unsplash.com/photo-1603811463137-67c87023c683?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1603811463137-67c87023c683?q=80&w=1000&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Business paket, hatasız boyasız. Tüm bakımları zamanında yapılmıştır.', 
+        features: ['Business Paket', 'Geri Görüş Kamerası', 'Hız Sabitleyici', 'App-Connect'], 
+        expertReport: 'Hatasız, Boyasız.', 
+        transmission: 'Otomatik', 
+        fuel: 'Benzin',
+        color: 'Okyanus Mavisi',
+        engineVolume: '1498 cc',
+        enginePower: '150 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Garantili',
+        damageStatus: 'Hatasız',
+        badge: 'FIRSAT',
+        viewers: 18,
+        favCount: 245,
+        isLastCar: false,
+        isPriceDropped: true,
+        isFeatured: true,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: true,
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['ErgoComfort Koltuklar', 'Üç Bölgeli Tam Otomatik Klima', 'Kendiliğinden Kararan Dikiz Aynası'],
+            exterior: ['17 inç Alaşım Jantlar', 'LED Farlar', 'Elektrikli Katlanır Yan Aynalar'],
+            multimedia: ['8 inç Dokunmatik Ekran', 'Kablosuz App-Connect', 'Bluetooth'],
+            safety: ['Yorgunluk Tespit Sistemi', 'Ön ve Arka Park Sensörleri', 'Hız Sabitleyici']
+        },
+        fuelConsumption: '5.1 lt/100km',
+        acceleration: '8.7 sn',
+        maxSpeed: '220 km/s',
+        length: '4775 mm',
+        width: '1832 mm',
+        height: '1458 mm',
+        trunkVolume: '586 lt',
+        weight: '1455 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '66 lt'
+    },
+    { 
+        id: 108, category: 'SALE', 
+        brand: 'Ford', 
+        model: 'Focus 1.5 TDCi Trend X', 
+        year: 2017, 
+        km: 145000, 
+        price: 785000, 
+        image: 'https://images.unsplash.com/photo-1551830820-330a71b99659?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1551830820-330a71b99659?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Uygun fiyatlı, ekonomik aile aracı. Bakımları yeni yapıldı, triger seti değişti.', 
+        features: ['Hız Sabitleyici', 'Park Sensörü', 'Bluetooth', 'Çelik Jant'], 
+        expertReport: 'Sağ ön çamurluk değişen, 2 parça lokal boya.', 
+        transmission: 'Manuel', 
+        fuel: 'Dizel',
+        color: 'Beyaz',
+        engineVolume: '1499 cc',
+        enginePower: '120 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Garantisiz',
+        damageStatus: 'Boyalı',
+        badge: 'UYGUN FİYAT',
+        viewers: 45,
+        favCount: 112,
+        isLastCar: false,
+        isPriceDropped: true,
+        isFeatured: false,
+        isPaintless: false,
+        isReplaceFree: false,
+        isDamageFree: false,
+        hasWarranty: false,
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Kumaş Koltuklar', 'Manuel Klima', 'Deri Direksiyon'],
+            exterior: ['16 inç Alaşım Jantlar', 'Sis Farları', 'Gövde Rengi Aynalar'],
+            multimedia: ['Radyo/CD Çalar', 'USB Bağlantısı', 'Bluetooth Telefon Bağlantısı'],
+            safety: ['ABS', 'ESP', 'Sürücü ve Yolcu Hava Yastıkları']
+        },
+        fuelConsumption: '3.8 lt/100km',
+        acceleration: '10.5 sn',
+        maxSpeed: '193 km/s',
+        length: '4538 mm',
+        width: '1823 mm',
+        height: '1469 mm',
+        trunkVolume: '421 lt',
+        weight: '1343 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '53 lt'
+    },
+    { 
+        id: 109, category: 'SALE', 
+        brand: 'Renault', 
+        model: 'Megane 1.5 dCi Touch', 
+        year: 2018, 
+        km: 110000, 
+        price: 895000, 
+        image: 'https://images.unsplash.com/photo-1610647752706-3bb12232b3ab?q=80&w=1000&auto=format&fit=crop', 
+        images: [
+            'https://images.unsplash.com/photo-1610647752706-3bb12232b3ab?q=80&w=1000&auto=format&fit=crop'
+        ],
+        description: 'Geniş iç hacim, düşük yakıt tüketimi. Aileler için ideal sedan.', 
+        features: ['Anahtarsız Çalıştırma', 'Dijital Klima', 'Geri Görüş Kamerası', 'LED Gündüz Farları'], 
+        expertReport: 'Hatasız, boyasız, tramersiz.', 
+        transmission: 'Otomatik', 
+        fuel: 'Dizel',
+        color: 'Gümüş Gri',
+        engineVolume: '1461 cc',
+        enginePower: '110 HP',
+        drivetrain: 'Önden Çekiş',
+        warranty: 'Garantisiz',
+        damageStatus: 'Hatasız',
+        badge: 'YENİ GİRİŞ',
+        viewers: 32,
+        favCount: 85,
+        isLastCar: false,
+        isPriceDropped: false,
+        isFeatured: true,
+        isPaintless: true,
+        isReplaceFree: true,
+        isDamageFree: true,
+        hasWarranty: false,
+        seats: 5,
+        availability: 'Stokta',
+        detailedFeatures: {
+            interior: ['Yarı Deri Koltuklar', 'Çift Bölgeli Otomatik Klima', 'Anahtarsız Giriş ve Çalıştırma'],
+            exterior: ['16 inç Alüminyum Alaşımlı Jantlar', 'C Şeklinde LED Gündüz Farları', 'Arka Park Sensörü'],
+            multimedia: ['7 inç Dokunmatik Ekran', 'Bluetooth', 'Apple CarPlay'],
+            safety: ['Hız Sabitleyici ve Sınırlayıcı', 'Yokuş Kalkış Desteği', 'Lastik Basınç Sensörü']
+        },
+        fuelConsumption: '3.7 lt/100km',
+        acceleration: '11.2 sn',
+        maxSpeed: '190 km/s',
+        length: '4632 mm',
+        width: '1814 mm',
+        height: '1443 mm',
+        trunkVolume: '503 lt',
+        weight: '1320 kg',
+        cylinderCount: 4,
+        fuelTankCapacity: '49 lt'
+    }
+  
   ]);
 
   // 3. Sale Cars
-  private _saleCars = signal<SaleCar[]>([
-    { id: 101, brand: 'Mercedes-Benz', model: 'C 200 4MATIC AMG', year: 2023, km: 12000, price: 3650000, image: 'https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1000&auto=format&fit=crop', description: 'Hatasız, boyasız, sıfır ayarında. AMG paket, gece paketi.', features: ['Cam Tavan', 'Burmester', 'Otonom', '360 Kamera'], expertReport: 'Hatasız, Boyasız, Tramer Yok', transmission: 'Otomatik', fuel: 'Benzin' }
-  ]);
+  
 
   // 4. Blog Posts
   private _blogPosts = signal<BlogPost[]>([
@@ -654,8 +1278,8 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
     this.incrementVisitCount();
 
     effect(() => localStorage.setItem('db_config', JSON.stringify(this._config())));
-    effect(() => localStorage.setItem('db_cars', JSON.stringify(this._cars())));
-    effect(() => localStorage.setItem('db_saleCars', JSON.stringify(this._saleCars())));
+    effect(() => localStorage.setItem('db_cars', JSON.stringify(this._inventory().filter(v => v.category === 'RENTAL'))));
+    effect(() => localStorage.setItem('db_saleCars', JSON.stringify(this._inventory().filter(v => v.category === 'SALE'))));
     effect(() => localStorage.setItem('db_blog', JSON.stringify(this._blogPosts())));
     effect(() => localStorage.setItem('db_reservations', JSON.stringify(this._reservations())));
     effect(() => localStorage.setItem('db_partnerRequests', JSON.stringify(this._partnerRequests())));
@@ -664,6 +1288,7 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
     effect(() => localStorage.setItem('db_feedbacks', JSON.stringify(this._feedbacks())));
     effect(() => localStorage.setItem('db_subscribers', JSON.stringify(this._subscribers())));
     effect(() => localStorage.setItem('db_notifications', JSON.stringify(this._notifications())));
+    effect(() => localStorage.setItem('db_favoriteCars', JSON.stringify(this._favoriteCars())));
 
     // Listen for storage changes in other tabs
     window.addEventListener('storage', (event) => {
@@ -724,12 +1349,37 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
 
       const cars = localStorage.getItem('db_cars');
       if (cars) {
-         const parsedCars = JSON.parse(cars);
-         if(parsedCars.length > 0) this._cars.set(parsedCars);
+         const parsedCars = JSON.parse(cars).map((c: any) => {
+             const initialCar = this._inventory().find(initial => initial.id === c.id && initial.category === 'RENTAL');
+             return {
+                 ...c, 
+                 category: 'RENTAL',
+                 isFeatured: c.isFeatured ?? initialCar?.isFeatured,
+                 isPopular: c.isPopular ?? initialCar?.isPopular,
+                 isCampaign: c.isCampaign ?? initialCar?.isCampaign,
+                 badge: c.badge ?? initialCar?.badge
+             };
+         });
+         if(parsedCars.length > 0) this._inventory.update(inv => [...inv.filter(v => v.category !== 'RENTAL'), ...parsedCars]);
       }
 
       const saleCars = localStorage.getItem('db_saleCars');
-      if (saleCars) this._saleCars.set(JSON.parse(saleCars));
+      if (saleCars) {
+         const parsedSaleCars = JSON.parse(saleCars).map((c: any) => {
+             const initialCar = this._inventory().find(initial => initial.id === c.id && initial.category === 'SALE');
+             return {
+                 ...c, 
+                 category: 'SALE',
+                 isFeatured: c.isFeatured ?? initialCar?.isFeatured,
+                 isPopular: c.isPopular ?? initialCar?.isPopular,
+                 isCampaign: c.isCampaign ?? initialCar?.isCampaign,
+                 badge: c.badge ?? initialCar?.badge
+             };
+         });
+         if (parsedSaleCars.length > 0) {
+            this._inventory.update(inv => [...inv.filter(v => v.category !== 'SALE'), ...parsedSaleCars]);
+         }
+      }
 
       const blog = localStorage.getItem('db_blog');
       if (blog) this._blogPosts.set(JSON.parse(blog));
@@ -754,6 +1404,9 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
 
       const notifications = localStorage.getItem('db_notifications');
       if (notifications) this._notifications.set(JSON.parse(notifications));
+
+      const favoriteCars = localStorage.getItem('db_favoriteCars');
+      if (favoriteCars) this._favoriteCars.set(JSON.parse(favoriteCars));
   }
 
   private incrementVisitCount() {
@@ -771,12 +1424,19 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
       sessionStorage.removeItem('session_active');
   }
 
+  getVehicleByAdId(id: number | string): Vehicle | undefined {
+    const searchId = id.toString();
+    return this._inventory().find(v => v.id.toString() === searchId);
+  }
+
   // --- PUBLIC GETTERS ---
   getConfig() { return this._config.asReadonly(); }
-  getCars() { return this._cars.asReadonly(); }
-  getCar(id: number) { return this._cars().find(c => c.id === id); }
-  getSaleCars() { return this._saleCars.asReadonly(); }
-  getSaleCar(id: number) { return this._saleCars().find(c => c.id === id); }
+  getAllVehicles() { return this._inventory.asReadonly(); }
+  getCars() { return computed(() => this._inventory().filter(v => v.category === 'RENTAL')); }
+  getCar(id: number | string) { return this._inventory().find(c => c.id == id && c.category === 'RENTAL'); }
+  getVehicle(id: number | string) { return this._inventory().find(v => v.id == id); }
+  getSaleCars() { return computed(() => this._inventory().filter(v => v.category === 'SALE')); }
+  getSaleCar(id: number | string) { return this._inventory().find(c => c.id == id && c.category === 'SALE'); }
   getTours() { return this._tours.asReadonly(); }
   getTour(id: number) { return this._tours().find(t => t.id === id); }
   getBlogPosts() { return this._blogPosts.asReadonly(); }
@@ -865,29 +1525,29 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
   }
 
   addCar(car: Car) {
-      this._cars.update(c => {
-          if (car.id && c.find(x => x.id === car.id)) {
-              return c.map(x => x.id === car.id ? car : x);
+      this._inventory.update(inv => {
+          if (car.id && inv.find(x => x.id === car.id)) {
+              return inv.map(x => x.id === car.id ? { ...car, category: 'RENTAL' } : x);
           } else {
-              return [{ ...car, id: Date.now() }, ...c];
+              return [{ ...car, id: Date.now(), category: 'RENTAL' }, ...inv];
           }
       });
   }
-  deleteCar(id: number) {
-      this._cars.update(cars => cars.filter(c => c.id !== id));
+  deleteCar(id: number | string) {
+      this._inventory.update(inv => inv.filter(c => c.id != id));
   }
 
   addSaleCar(car: SaleCar) {
-      this._saleCars.update(c => {
-          if (car.id && c.find(x => x.id === car.id)) {
-              return c.map(x => x.id === car.id ? car : x);
+      this._inventory.update(inv => {
+          if (car.id && inv.find(x => x.id === car.id)) {
+              return inv.map(x => x.id === car.id ? { ...car, category: 'SALE' } : x);
           } else {
-              return [{ ...car, id: Date.now() }, ...c];
+              return [{ ...car, id: Date.now(), category: 'SALE' }, ...inv];
           }
       });
   }
-  deleteSaleCar(id: number) {
-      this._saleCars.update(cars => cars.filter(c => c.id !== id));
+  deleteSaleCar(id: number | string) {
+      this._inventory.update(inv => inv.filter(c => c.id != id));
   }
 
   addBlogPost(post: BlogPost) {
@@ -944,10 +1604,10 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
   getBookingRequest() { return this._bookingRequest(); }
   clearBookingRequest() { this._bookingRequest.set(null); }
   
-  toggleFavorite(id: number) {
+  toggleFavorite(id: number | string) {
     this._favoriteCars.update(favs => favs.includes(id) ? favs.filter(f => f !== id) : [...favs, id]);
   }
-  isFavorite(id: number) { return this._favoriteCars().includes(id); }
+  isFavorite(id: number | string) { return this._favoriteCars().includes(id); }
   getFavoriteCount = computed(() => this._favoriteCars().length);
 
   // --- NEWSLETTER & NOTIFICATIONS ---
@@ -1037,10 +1697,10 @@ Daha kapsamlı koruma için aşağıdaki ek paketleri satın alabilirsiniz:
     try {
       // Prepare Context Data
       const contextData = {
-        availableRentalCars: this._cars().filter(c => c.isAvailable).map(c => ({
+        availableRentalCars: this._inventory().filter(v => v.category === 'RENTAL').filter(c => c.isAvailable).map(c => ({
            brand: c.brand, model: c.model, type: c.type, price: c.price, fuel: c.fuel, gear: c.transmission, seats: c.seats
         })),
-        salesGallery: this._saleCars().map(c => ({
+        salesGallery: this._inventory().filter(v => v.category === 'SALE').map(c => ({
            brand: c.brand, model: c.model, year: c.year, price: c.price, km: c.km, expertReport: c.expertReport
         })),
         tours: this._tours().map(t => ({

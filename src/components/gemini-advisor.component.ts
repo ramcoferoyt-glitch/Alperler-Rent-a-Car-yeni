@@ -20,7 +20,7 @@ import { ToastService } from '../services/toast.service';
           </div>
           <div class="flex flex-col items-start">
              <span class="font-bold tracking-wide text-sm">{{ t().chat.title }}</span>
-             <span class="text-[10px] font-medium opacity-80">Online</span>
+             <span class="text-[10px] font-medium opacity-80">{{ t().chat.online }}</span>
           </div>
         </button>
       }
@@ -43,7 +43,7 @@ import { ToastService } from '../services/toast.service';
                         <div class="w-32 h-32 rounded-full bg-red-500 flex items-center justify-center shadow-[0_0_30px_rgba(239,68,68,0.6)] relative z-10 transition-all duration-300">
                             <svg class="w-12 h-12 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                         </div>
-                        <p class="mt-6 text-xl font-bold text-red-400 animate-pulse">Sizi Dinliyorum...</p>
+                        <p class="mt-6 text-xl font-bold text-red-400 animate-pulse">{{ t().chat.listening }}</p>
                     } @else if (isSpeaking()) {
                         <div class="w-32 h-32 rounded-full bg-blue-500/20 animate-ping absolute inset-0"></div>
                         <div class="w-32 h-32 rounded-full bg-blue-500 flex items-center justify-center shadow-[0_0_30px_rgba(59,130,246,0.6)] relative z-10 transition-all duration-300">
@@ -54,24 +54,24 @@ import { ToastService } from '../services/toast.service';
                                 <div class="w-1.5 bg-white animate-[music-bar_1.1s_ease-in-out_infinite] h-3"></div>
                              </div>
                         </div>
-                        <p class="mt-6 text-xl font-bold text-blue-400">Cevap Veriyorum...</p>
+                        <p class="mt-6 text-xl font-bold text-blue-400">{{ t().chat.speaking }}</p>
                     } @else if (isLoading()) {
                         <div class="w-32 h-32 rounded-full bg-slate-700 flex items-center justify-center relative z-10">
                             <svg class="w-12 h-12 text-slate-400 animate-spin" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                         </div>
-                        <p class="mt-6 text-xl font-bold text-slate-400">Düşünüyorum...</p>
+                        <p class="mt-6 text-xl font-bold text-slate-400">{{ t().chat.thinking }}</p>
                     } @else {
                         <div class="w-32 h-32 rounded-full bg-slate-700 flex items-center justify-center relative z-10 cursor-pointer hover:bg-slate-600 transition-colors" (click)="startListening()">
                             <svg class="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
                         </div>
-                        <p class="mt-6 text-xl font-bold text-white">Dokun ve Konuş</p>
+                        <p class="mt-6 text-xl font-bold text-white">{{ t().chat.tapToSpeak }}</p>
                     }
                 </div>
 
                 <!-- Transcript / Subtitles -->
                 <div class="h-24 w-full max-w-xs flex items-center justify-center">
                     <p class="text-slate-300 text-sm italic leading-relaxed">
-                        {{ currentInput || (isSpeaking() ? '...' : 'Size nasıl yardımcı olabilirim?') }}
+                        {{ currentInput || (isSpeaking() ? '...' : t().chat.prompt) }}
                     </p>
                 </div>
 
@@ -112,7 +112,7 @@ import { ToastService } from '../services/toast.service';
                 <!-- Voice Mode Button -->
                 <button (click)="toggleConversationMode()" class="bg-green-600 hover:bg-green-500 text-white px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1 transition-all shadow-lg animate-pulse">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"/></svg>
-                    SESLİ ASİSTAN
+                    {{ t().chat.voiceAssistant }}
                 </button>
 
                 <button (click)="toggleChat()" aria-label="Sohbeti Kapat" class="text-white/70 hover:text-white transition-colors p-1 hover:bg-white/10 rounded-full">

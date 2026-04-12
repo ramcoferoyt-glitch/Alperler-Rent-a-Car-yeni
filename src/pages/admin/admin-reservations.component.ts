@@ -1,6 +1,7 @@
 
-import { Component, inject, ChangeDetectionStrategy, signal, computed } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
 import { CarService } from '../../services/car.service';
 import { ToastService } from '../../services/toast.service';
 import { ConfirmService } from '../../services/confirm.service';
@@ -45,6 +46,9 @@ import { ConfirmService } from '../../services/confirm.service';
                        <td class="px-6 py-4">
                           <div class="font-bold">{{ res.itemName }}</div>
                           <div class="text-xs text-slate-500">{{ res.type }}</div>
+                          @if(res.notes) {
+                            <div class="text-xs text-amber-600 mt-1 whitespace-pre-line">{{ res.notes }}</div>
+                          }
                        </td>
                        <td class="px-6 py-4 text-sm">
                           @if(res.days) { {{ res.days }} Gün <br> }
@@ -77,16 +81,31 @@ import { ConfirmService } from '../../services/confirm.service';
     </div>
   `
 })
-export class AdminReservationsComponent {
+export class AdminReservationsComponent implements OnInit {
   carService = inject(CarService);
   toastService = inject(ToastService);
   confirmService = inject(ConfirmService);
+  route = inject(ActivatedRoute);
   reservations = this.carService.getReservations();
   
   filter = signal<'ALL' | 'PENDING' | 'APPROVED'>('ALL');
+  typeFilter = signal<string | null>(null);
+
+  ngOnInit() {
+    this.route.queryParams.subscribe(params => {
+      if (params['type']) {
+        this.typeFilter.set(params['type']);
+      } else {
+        this.typeFilter.set(null);
+      }
+    });
+  }
 
   filteredReservations = computed(() => {
-     const current = this.reservations();
+     let current = this.reservations();
+     if (this.typeFilter()) {
+         current = current.filter(r => r.type === this.typeFilter());
+     }
      if(this.filter() === 'ALL') return current;
      return current.filter(r => r.status === this.filter());
   });

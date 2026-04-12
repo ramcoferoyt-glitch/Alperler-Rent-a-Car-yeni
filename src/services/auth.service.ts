@@ -57,6 +57,16 @@ export class AuthService {
     return false;
   }
 
+  verifyCredentials(pass: string): boolean {
+      const cleanPass = pass.trim();
+      const validPass = localStorage.getItem('adminPass') || ((typeof process !== 'undefined' && process.env && process.env['ADMIN_PASS']) || 'i4h4k5a2p7r7');
+      return cleanPass === validPass;
+  }
+
+  getCurrentEmail(): string {
+      return localStorage.getItem('adminUser') || ((typeof process !== 'undefined' && process.env && process.env['ADMIN_USER']) || 'ishak595@gmail.com');
+  }
+
   updateCredentials(newUser: string, newPass: string) {
       localStorage.setItem('adminUser', newUser.trim().toLowerCase());
       localStorage.setItem('adminPass', newPass.trim());

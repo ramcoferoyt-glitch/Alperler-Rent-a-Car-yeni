@@ -1,163 +1,253 @@
 
 import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { MatIconModule } from '@angular/material/icon';
 import { CarService } from '../services/car.service';
 import { UiService } from '../services/ui.service';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Car } from '../models/car.model';
 import { CarImageCarouselComponent } from '../components/car-image-carousel.component';
+import { VehicleCardComponent } from '../components/vehicle-card.component';
 
 @Component({
   selector: 'app-fleet',
   standalone: true,
-  imports: [CommonModule, FormsModule, CarImageCarouselComponent],
+  imports: [CommonModule, FormsModule, MatIconModule, VehicleCardComponent],
   template: `
-    <div class="bg-slate-50 min-h-screen pt-28 pb-20 font-sans">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        <!-- Header -->
-        <div class="text-center mb-10">
-           <h1 class="text-4xl font-serif font-bold text-slate-900">{{ t().nav.fleet }}</h1>
-           <p class="text-slate-500 mt-2">Yüksekova yollarına uygun, güçlü ve konforlu araçlar.</p>
+    <div class="bg-slate-50 min-h-screen font-sans">
+      
+      <!-- Sticky Module Header -->
+      <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+          <!-- Top Row: Search + Filter/Sort -->
+          <div class="h-16 flex items-center gap-3">
+            <div class="relative flex-grow">
+              <input type="text" [(ngModel)]="searchQuery" [placeholder]="t().fleet.searchPlaceholder || 'Marka, model veya İlan No ara...'" class="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 text-sm focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all bg-slate-50">
+              <svg class="w-5 h-5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+
+            <button (click)="showFilterModal.set(true)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-all relative" [attr.aria-label]="t().fleet.filterBtn || 'Filtrele'">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"/></svg>
+              @if (activeFilterCount() > 0) {
+                <span class="absolute -top-1 -right-1 w-5 h-5 bg-amber-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">{{ activeFilterCount() }}</span>
+              }
+            </button>
+
+            <button (click)="showSortModal.set(true)" class="p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-600 hover:bg-slate-100 transition-all" [attr.aria-label]="t().fleet.sortBtn || 'Sırala'">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12"/></svg>
+            </button>
+          </div>
         </div>
+      </div>
 
-        <!-- Search & Filters Container -->
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 mb-10">
+      <!-- Filter Modal -->
+      @if (showFilterModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in" (click)="showFilterModal.set(false)">
+          <div class="bg-white w-full max-w-lg rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up" (click)="$event.stopPropagation()">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h2 class="text-xl font-bold text-slate-900">Filtrele</h2>
+              <button (click)="showFilterModal.set(false)" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
             
-            <!-- Search Bar -->
-            <div class="mb-6 relative">
-                <input 
-                    type="text" 
-                    [(ngModel)]="searchQuery" 
-                    [placeholder]="t().buttons.search || 'Araç Ara (Marka, Model...)'"
-                    class="w-full pl-12 pr-4 py-3 rounded-xl border border-slate-200 focus:border-slate-900 focus:ring-0 transition-colors bg-slate-50 text-slate-900 placeholder-slate-400"
-                >
-                <svg class="w-6 h-6 text-slate-400 absolute left-4 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <div class="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+              <!-- Brand -->
+              <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-900 uppercase tracking-wider">{{ t().filters.brand }}</label>
+                <div class="grid grid-cols-2 gap-2">
+                  <button (click)="tempFilterBrand.set('All')" [class.bg-amber-500]="tempFilterBrand() === 'All'" [class.text-white]="tempFilterBrand() === 'All'" [class.bg-slate-50]="tempFilterBrand() !== 'All'" class="py-2 px-4 rounded-xl text-sm font-medium transition-all border border-transparent">Tümü</button>
+                  @for (brand of brands(); track brand) {
+                    <button (click)="tempFilterBrand.set(brand)" [class.bg-amber-500]="tempFilterBrand() === brand" [class.text-white]="tempFilterBrand() === brand" [class.bg-slate-50]="tempFilterBrand() !== brand" class="py-2 px-4 rounded-xl text-sm font-medium transition-all border border-transparent">{{ brand }}</button>
+                  }
+                </div>
+              </div>
+
+              <!-- Price Range -->
+              <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-900 uppercase tracking-wider">{{ t().filters.priceRange }}</label>
+                <div class="grid grid-cols-2 gap-2">
+                  @for (range of [
+                    {id: 'All', label: 'Tümü'},
+                    {id: '0-1000', label: '0 - 1.000 TL'},
+                    {id: '1000-2000', label: '1.000 - 2.000 TL'},
+                    {id: '2000+', label: '2.000+ TL'}
+                  ]; track range.id) {
+                    <button (click)="tempFilterPrice.set(range.id)" [class.bg-amber-500]="tempFilterPrice() === range.id" [class.text-white]="tempFilterPrice() === range.id" [class.bg-slate-50]="tempFilterPrice() !== range.id" class="py-2 px-4 rounded-xl text-sm font-medium transition-all border border-transparent">{{ range.label }}</button>
+                  }
+                </div>
+              </div>
+
+              <!-- Fuel -->
+              <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-900 uppercase tracking-wider">{{ t().filters.fuel }}</label>
+                <div class="grid grid-cols-2 gap-2">
+                  @for (fuel of ['All', 'Dizel', 'Benzin', 'Hibrit', 'Elektrik']; track fuel) {
+                    <button (click)="tempFilterFuel.set(fuel)" [class.bg-amber-500]="tempFilterFuel() === fuel" [class.text-white]="tempFilterFuel() === fuel" [class.bg-slate-50]="tempFilterFuel() !== fuel" class="py-2 px-4 rounded-xl text-sm font-medium transition-all border border-transparent">
+                      {{ fuel === 'All' ? 'Tümü' : uiService.translateDbValue(fuel, 'fuel') }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Transmission -->
+              <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-900 uppercase tracking-wider">{{ t().filters.transmission }}</label>
+                <div class="grid grid-cols-2 gap-2">
+                  @for (trans of ['All', 'Otomatik', 'Manuel']; track trans) {
+                    <button (click)="tempFilterTransmission.set(trans)" [class.bg-amber-500]="tempFilterTransmission() === trans" [class.text-white]="tempFilterTransmission() === trans" [class.bg-slate-50]="tempFilterTransmission() !== trans" class="py-2 px-4 rounded-xl text-sm font-medium transition-all border border-transparent">
+                      {{ trans === 'All' ? 'Tümü' : uiService.translateDbValue(trans, 'transmission') }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- Type -->
+              <div class="space-y-3">
+                <label class="text-sm font-bold text-slate-900 uppercase tracking-wider">Araç Tipi</label>
+                <div class="grid grid-cols-2 gap-2">
+                  @for (type of ['All', 'SUV', 'Sedan', 'Hatchback', 'Pickup', 'Luxury']; track type) {
+                    <button (click)="tempFilterType.set(type)" [class.bg-amber-500]="tempFilterType() === type" [class.text-white]="tempFilterType() === type" [class.bg-slate-50]="tempFilterType() !== type" class="py-2 px-4 rounded-xl text-sm font-medium transition-all border border-transparent">
+                      {{ type === 'All' ? 'Tümü' : (t().filters[type.toLowerCase()] || type) }}
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <!-- With Driver Toggle -->
+              <div class="pt-4 border-t border-slate-100">
+                <button (click)="tempWithDriver.set(!tempWithDriver())" class="w-full flex items-center justify-between p-4 rounded-2xl bg-slate-50 hover:bg-slate-100 transition-all border border-slate-200">
+                  <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center">
+                      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                    </div>
+                    <div class="text-left">
+                      <span class="block text-sm font-bold text-slate-900">Şoförlü Kiralama</span>
+                      <span class="block text-[10px] text-slate-500 uppercase font-bold tracking-wider">Özel Hizmet</span>
+                    </div>
+                  </div>
+                  <div class="w-12 h-6 rounded-full transition-colors relative" [class.bg-emerald-500]="tempWithDriver()" [class.bg-slate-300]="!tempWithDriver()">
+                    <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform" [class.translate-x-6]="tempWithDriver()"></div>
+                  </div>
+                </button>
+              </div>
             </div>
 
-            <div class="flex flex-col lg:flex-row justify-between items-center gap-6">
-                
-                <!-- Type Filters -->
-                <div class="flex flex-wrap justify-center gap-2" role="group" aria-label="Araç Tipi Filtreleri">
-                    <button (click)="filterType.set('All')" [attr.aria-pressed]="filterType() === 'All'" [class]="filterType() === 'All' ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">{{ t().filters.all }}</button>
-                    <button (click)="filterType.set('SUV')" [attr.aria-pressed]="filterType() === 'SUV'" [class]="filterType() === 'SUV' ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">{{ t().filters.suv }}</button>
-                    <button (click)="filterType.set('Pickup')" [attr.aria-pressed]="filterType() === 'Pickup'" [class]="filterType() === 'Pickup' ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">{{ t().filters.pickup }}</button>
-                    <button (click)="filterType.set('Sedan')" [attr.aria-pressed]="filterType() === 'Sedan'" [class]="filterType() === 'Sedan' ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">{{ t().filters.sedan }}</button>
-                    <button (click)="filterType.set('Hatchback')" [attr.aria-pressed]="filterType() === 'Hatchback'" [class]="filterType() === 'Hatchback' ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">{{ t().filters.hatchback }}</button>
-                    <button (click)="filterType.set('Luxury')" [attr.aria-pressed]="filterType() === 'Luxury'" [class]="filterType() === 'Luxury' ? 'bg-slate-900 text-white shadow-lg' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'" class="px-4 py-2 rounded-lg font-bold text-sm transition-all">{{ t().filters.luxury }}</button>
-                </div>
-
-                <!-- Advanced Filters & Sort -->
-                <div class="flex flex-wrap gap-3 w-full lg:w-auto justify-center lg:justify-end">
-                    
-                    <!-- Fuel Filter -->
-                    <select [(ngModel)]="filterFuel" class="bg-slate-100 border-none text-slate-700 py-2 px-4 pr-8 rounded-lg font-bold text-sm focus:ring-2 focus:ring-slate-900 cursor-pointer">
-                        <option value="All">{{ t().car.fuel || 'Yakıt Tipi' }} ({{ t().filters.all }})</option>
-                        <option value="Dizel">{{ t().car.diesel }}</option>
-                        <option value="Benzin">{{ t().car.gasoline }}</option>
-                        <option value="Hibrit">{{ t().car.hybrid }}</option>
-                        <option value="Elektrik">{{ t().car.electric }}</option>
-                    </select>
-
-                    <!-- Transmission Filter -->
-                    <select [(ngModel)]="filterTransmission" class="bg-slate-100 border-none text-slate-700 py-2 px-4 pr-8 rounded-lg font-bold text-sm focus:ring-2 focus:ring-slate-900 cursor-pointer">
-                        <option value="All">{{ t().car.transmission || 'Vites' }} ({{ t().filters.all }})</option>
-                        <option value="Otomatik">{{ t().car.auto }}</option>
-                        <option value="Manuel">{{ t().car.manual }}</option>
-                    </select>
-
-                    <!-- Sort -->
-                    <select [(ngModel)]="sortOption" class="bg-slate-100 border-none text-slate-700 py-2 px-4 pr-8 rounded-lg font-bold text-sm focus:ring-2 focus:ring-slate-900 cursor-pointer">
-                        <option value="default">{{ t().sort.default }}</option>
-                        <option value="priceAsc">{{ t().sort.priceAsc }}</option>
-                        <option value="priceDesc">{{ t().sort.priceDesc }}</option>
-                    </select>
-                </div>
+            <div class="p-6 border-t border-slate-100 flex gap-3">
+              <button (click)="resetTempFilters()" class="flex-1 py-4 rounded-2xl font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">Sıfırla</button>
+              <button (click)="applyFilters()" class="flex-[2] py-4 rounded-2xl font-bold text-white bg-slate-900 hover:bg-amber-500 hover:text-slate-900 transition-all shadow-lg shadow-slate-200">Uygula</button>
             </div>
+          </div>
+        </div>
+      }
+
+      <!-- Sort Modal -->
+      @if (showSortModal()) {
+        <div class="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 animate-fade-in" (click)="showSortModal.set(false)">
+          <div class="bg-white w-full max-w-sm rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-slide-up" (click)="$event.stopPropagation()">
+            <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+              <h2 class="text-xl font-bold text-slate-900">Sırala</h2>
+              <button (click)="showSortModal.set(false)" class="p-2 hover:bg-slate-100 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+            
+            <div class="p-4 space-y-2">
+              @for (opt of [
+                {id: 'default', label: t().sort.default},
+                {id: 'priceAsc', label: t().sort.priceAsc},
+                {id: 'priceDesc', label: t().sort.priceDesc}
+              ]; track opt.id) {
+                <button (click)="applySort(opt.id)" [class.bg-amber-50]="sortOption() === opt.id" [class.text-amber-600]="sortOption() === opt.id" class="w-full text-left p-4 rounded-2xl font-bold text-slate-700 hover:bg-slate-50 transition-all flex justify-between items-center">
+                  {{ opt.label }}
+                  @if (sortOption() === opt.id) {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                  }
+                </button>
+              }
+            </div>
+          </div>
+        </div>
+      }
+
+      <div class="max-w-7xl mx-auto md:px-4 sm:px-6 lg:px-8 mt-6 pb-20">
+        <!-- Header Section -->
+        <div class="mb-8 px-4 md:px-0">
+          <h1 class="text-3xl md:text-4xl font-bold text-slate-900 mb-2">
+            @if (showFavoritesOnly()) {
+              Favorilerim
+            } @else {
+              Filomuz
+            }
+          </h1>
+          <p class="text-slate-500">
+            @if (showFavoritesOnly()) {
+              Beğendiğiniz ve daha sonra incelemek istediğiniz araçlar burada listelenir.
+            } @else {
+              Yüksekova'nın en geniş ve en yeni araç filosuyla hizmetinizdeyiz.
+            }
+          </p>
         </div>
 
         <!-- Driver Mode Indicator -->
         @if (withDriver()) {
-            <div class="mb-8 bg-amber-50 border border-amber-200 p-4 rounded-lg text-center text-amber-900 font-bold flex items-center justify-center shadow-sm animate-fade-in">
+            <div class="mb-6 mx-4 md:mx-0 bg-amber-50 border border-amber-200 p-4 rounded-xl text-center text-amber-900 font-bold flex items-center justify-center shadow-sm animate-fade-in">
                 <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
                 {{ t().filters.driverActive }}
                 <button (click)="withDriver.set(false)" class="ml-4 text-xs underline text-amber-700 hover:text-amber-900">{{ t().buttons.remove }}</button>
             </div>
         }
 
-        <!-- Car Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-           @for (car of sortedCars(); track car.id) {
-              <div class="bg-white rounded-xl shadow-md hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 border border-slate-100 hover:border-amber-200 overflow-hidden flex flex-col h-full group relative cursor-pointer" [class.opacity-75]="!car.isAvailable" (click)="goToDetail(car.id)">
-                 
-                 <!-- Availability Overlay if not available -->
-                 @if (!car.isAvailable) {
-                    <div class="absolute inset-0 z-20 bg-slate-900/60 flex items-center justify-center backdrop-blur-sm">
-                        <span class="bg-red-600 text-white px-6 py-2 rounded-lg font-bold text-xl transform -rotate-12 shadow-2xl border-2 border-white">{{ t().filters.rented }}</span>
-                    </div>
-                 }
-
-                 <!-- Image -->
-                 <div class="h-60 overflow-hidden relative bg-slate-200">
-                    <app-car-image-carousel [images]="car.images || [car.image]" [altText]="car.model"></app-car-image-carousel>
-                    
-                    <!-- Badges -->
-                    <div class="absolute top-4 left-4 flex gap-2 pointer-events-none z-20">
-                        <div class="bg-white/90 backdrop-blur px-3 py-1 rounded-sm text-xs font-bold uppercase shadow-sm text-slate-900">
-                            {{ translateDbValue(car.fuel, 'fuel') }}
-                        </div>
-                    </div>
-
-                    <!-- Favorite Button -->
-                    <button (click)="toggleFav($event, car.id)" [attr.aria-label]="isFav(car.id) ? 'Favorilerden Çıkar' : 'Favorilere Ekle'" class="absolute top-4 right-4 z-30 w-8 h-8 rounded-full bg-white/80 backdrop-blur flex items-center justify-center transition-all hover:scale-110 shadow-md hover:bg-white">
-                         @if (isFav(car.id)) {
-                            <svg class="w-5 h-5 text-red-500 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-                         } @else {
-                            <svg class="w-5 h-5 text-slate-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
-                         }
-                    </button>
-                 </div>
-                 
-                 <!-- Content -->
-                 <div class="p-6 flex flex-col flex-grow">
-                    <div class="flex justify-between items-start mb-2">
-                       <h3 class="text-xl font-bold text-slate-900 font-serif group-hover:text-amber-600 transition-colors">{{car.brand}} <span class="font-normal">{{car.model}}</span></h3>
-                       <div class="text-right">
-                           <span class="block text-xl font-bold text-slate-900 group-hover:text-amber-600 transition-colors">{{car.price}} ₺ <span class="text-xs text-slate-400 font-normal group-hover:text-amber-400">/{{ t().car.day }}</span></span>
-                       </div>
-                    </div>
-                    
-                    <div class="flex gap-3 text-xs text-slate-500 mb-4">
-                        <span class="bg-slate-100 px-2 py-1 rounded border border-slate-200 group-hover:border-amber-200 transition-colors">{{ translateDbValue(car.transmission, 'transmission') }}</span>
-                        <span class="bg-slate-100 px-2 py-1 rounded border border-slate-200 group-hover:border-amber-200 transition-colors">{{car.seats}} {{ t().car.seats }}</span>
-                        <span class="bg-slate-100 px-2 py-1 rounded border border-slate-200 group-hover:border-amber-200 transition-colors">{{ translateDbValue(car.type, 'type') }}</span>
-                    </div>
-                    
-                    <div class="space-y-1 mb-6">
-                        @for (feat of car.features.slice(0, 3); track feat) {
-                            <div class="flex items-center text-sm text-slate-600 group-hover:text-slate-800 transition-colors">
-                                <svg class="w-4 h-4 mr-2 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg> 
-                                {{feat}}
-                            </div>
-                        }
-                    </div>
-
-                    <div class="mt-auto grid grid-cols-2 gap-3">
-                        <button (click)="goToDetail(car.id); $event.stopPropagation()" class="bg-white border-2 border-slate-200 text-slate-900 hover:border-slate-900 font-bold py-3 rounded-lg transition-colors z-10 relative">
-                            {{ t().buttons.details || 'Detaylar' }}
-                        </button>
-                        <button (click)="rentCar(car); $event.stopPropagation()" 
-                                [disabled]="!car.isAvailable"
-                                [attr.aria-label]="!car.isAvailable ? t().buttons.notAvailable : (withDriver() ? t().buttons.rentDriver : t().buttons.rent)"
-                                class="bg-slate-900 hover:bg-amber-500 hover:text-slate-900 text-white font-bold py-3 rounded-lg transition-colors shadow-lg flex justify-center items-center disabled:bg-slate-300 disabled:cursor-not-allowed disabled:text-slate-500 z-10 relative">
-                           <span>{{ !car.isAvailable ? t().buttons.notAvailable : (withDriver() ? t().buttons.rentDriver : t().buttons.rent) }}</span>
-                        </button>
-                    </div>
-                 </div>
+        <!-- Car List -->
+        @if (sortedCars().length > 0) {
+            <div class="bg-white md:border md:border-slate-200 md:rounded-xl md:shadow-sm overflow-hidden border-t border-slate-200">
+              <div class="divide-y divide-slate-100">
+                @for (car of sortedCars(); track car.id) {
+                  <app-vehicle-card 
+                      [car]="car" 
+                      [variant]="car.category === 'SALE' ? 'sale' : 'rental'" 
+                      [withDriver]="withDriver()">
+                  </app-vehicle-card>
+                }
               </div>
-           }
-        </div>
+            </div>
+        } @else {
+          <div class="flex flex-col items-center justify-center py-20 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200 mt-6">
+            <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6">
+              <mat-icon class="text-4xl text-slate-300">
+                @if (showFavoritesOnly()) {
+                  favorite_border
+                } @else {
+                  sentiment_dissatisfied
+                }
+              </mat-icon>
+            </div>
+            <h3 class="text-xl font-bold text-slate-900 mb-2">
+              @if (showFavoritesOnly()) {
+                Henüz favori aracınız yok
+              } @else {
+                Aradığınız kriterlere uygun araç bulunamadı
+              }
+            </h3>
+            <p class="text-slate-500 max-w-xs mx-auto mb-8">
+              @if (showFavoritesOnly()) {
+                Beğendiğiniz araçları favorilere ekleyerek burada görebilirsiniz.
+              } @else {
+                Filtreleri temizleyerek tüm araçlarımızı görebilirsiniz.
+              }
+            </p>
+            @if (showFavoritesOnly()) {
+              <a routerLink="/fleet" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors">
+                Araçları İncele
+              </a>
+            } @else {
+              <button (click)="resetFilters()" class="px-8 py-3 bg-blue-600 text-white rounded-xl font-bold hover:bg-blue-700 transition-colors">
+                Filtreleri Temizle
+              </button>
+            }
+          </div>
+        }
       </div>
     </div>
   `
@@ -169,29 +259,68 @@ export class FleetComponent implements OnInit {
   route = inject(ActivatedRoute);
   
   allCars = this.carService.getCars();
+  allVehicles = this.carService.getAllVehicles();
   
   // Filters
   searchQuery = signal('');
   filterType = signal('All');
+  filterBrand = signal('All');
   filterFuel = signal('All');
   filterTransmission = signal('All');
+  filterPrice = signal('All');
   sortOption = signal('default'); // default, priceAsc, priceDesc
+
+  // Modal States
+  showFilterModal = signal(false);
+  showSortModal = signal(false);
+
+  // Temporary Filter States (for Apply button)
+  tempFilterType = signal('All');
+  tempFilterBrand = signal('All');
+  tempFilterFuel = signal('All');
+  tempFilterTransmission = signal('All');
+  tempFilterPrice = signal('All');
+  tempWithDriver = signal(false);
+
+  activeFilterCount = computed(() => {
+    let count = 0;
+    if (this.filterType() !== 'All') count++;
+    if (this.filterBrand() !== 'All') count++;
+    if (this.filterFuel() !== 'All') count++;
+    if (this.filterTransmission() !== 'All') count++;
+    if (this.filterPrice() !== 'All') count++;
+    if (this.withDriver()) count++;
+    return count;
+  });
   
   startDate = '';
   endDate = '';
   withDriver = signal(false);
+  showFavoritesOnly = signal(false);
+  
+  brands = computed(() => {
+    const cars = this.allCars();
+    const uniqueBrands = [...new Set(cars.map(c => c.brand))].sort();
+    return uniqueBrands;
+  });
 
   t = this.uiService.translations;
 
   sortedCars = computed(() => {
-    let cars = this.allCars();
+    let cars = this.showFavoritesOnly() ? this.allVehicles() : this.allCars();
 
-    // 1. Text Search
+    // 0. Favorites Filter
+    if (this.showFavoritesOnly()) {
+      cars = cars.filter(c => this.carService.isFavorite(c.id));
+    }
+
+    // 1. Text Search (Brand, Model, or Ad ID)
     const query = this.searchQuery().toLowerCase();
     if (query) {
         cars = cars.filter(c => 
             c.brand.toLowerCase().includes(query) || 
-            c.model.toLowerCase().includes(query)
+            c.model.toLowerCase().includes(query) ||
+            (c.id && c.id.toString().includes(query))
         );
     }
 
@@ -200,17 +329,34 @@ export class FleetComponent implements OnInit {
         cars = cars.filter(c => c.type === this.filterType());
     }
 
-    // 3. Fuel Filter
+    // 3. Brand Filter
+    if (this.filterBrand() !== 'All') {
+        cars = cars.filter(c => c.brand === this.filterBrand());
+    }
+
+    // 4. Fuel Filter
     if (this.filterFuel() !== 'All') {
         cars = cars.filter(c => c.fuel === this.filterFuel());
     }
 
-    // 4. Transmission Filter
+    // 5. Transmission Filter
     if (this.filterTransmission() !== 'All') {
         cars = cars.filter(c => c.transmission === this.filterTransmission());
     }
 
-    // 5. Sorting
+    // 6. Price Filter
+    if (this.filterPrice() !== 'All') {
+      const price = this.filterPrice();
+      if (price === '0-1000') {
+        cars = cars.filter(c => c.price <= 1000);
+      } else if (price === '1000-2000') {
+        cars = cars.filter(c => c.price > 1000 && c.price <= 2000);
+      } else if (price === '2000+') {
+        cars = cars.filter(c => c.price > 2000);
+      }
+    }
+
+    // 7. Sorting
     if (this.sortOption() === 'priceAsc') {
        return [...cars].sort((a, b) => a.price - b.price);
     } else if (this.sortOption() === 'priceDesc') {
@@ -224,8 +370,53 @@ export class FleetComponent implements OnInit {
       if (params['start']) this.startDate = params['start'];
       if (params['end']) this.endDate = params['end'];
       if (params['driver'] === 'true') this.withDriver.set(true);
-      if (params['filter']) this.filterType.set(params['filter']);
+      if (params['favs'] === 'true') this.showFavoritesOnly.set(true);
+      if (params['search']) this.searchQuery.set(params['search']);
+      if (params['filter']) {
+        this.filterType.set(params['filter']);
+        this.tempFilterType.set(params['filter']);
+      }
     });
+  }
+
+  goBack() {
+    this.router.navigate(['/']);
+  }
+
+  applyFilters() {
+    this.filterType.set(this.tempFilterType());
+    this.filterBrand.set(this.tempFilterBrand());
+    this.filterFuel.set(this.tempFilterFuel());
+    this.filterTransmission.set(this.tempFilterTransmission());
+    this.filterPrice.set(this.tempFilterPrice());
+    this.withDriver.set(this.tempWithDriver());
+    this.showFilterModal.set(false);
+  }
+
+  applySort(option: string) {
+    this.sortOption.set(option);
+    this.showSortModal.set(false);
+  }
+
+  resetTempFilters() {
+    this.tempFilterType.set('All');
+    this.tempFilterBrand.set('All');
+    this.tempFilterFuel.set('All');
+    this.tempFilterTransmission.set('All');
+    this.tempFilterPrice.set('All');
+    this.tempWithDriver.set(false);
+  }
+
+  resetFilters() {
+    this.searchQuery.set('');
+    this.filterType.set('All');
+    this.filterBrand.set('All');
+    this.filterFuel.set('All');
+    this.filterTransmission.set('All');
+    this.filterPrice.set('All');
+    this.sortOption.set('default');
+    this.showFavoritesOnly.set(false);
+    this.resetTempFilters();
   }
 
   toggleFav(event: Event, id: number) {
@@ -237,15 +428,33 @@ export class FleetComponent implements OnInit {
     return this.carService.isFavorite(id);
   }
 
-  goToDetail(id: number) {
-    this.router.navigate(['/fleet', id]);
+  goToDetail(id: string | number, event?: Event) {
+    if (event) event.stopPropagation();
+    const vehicle = this.allVehicles().find(v => v.id === id);
+    const route = vehicle?.category === 'SALE' ? '/sales' : '/fleet';
+    this.router.navigate([route, id]);
   }
 
-  rentCar(car: Car) {
+  shareCar(car: Car, event: Event) {
+    event.stopPropagation();
+    if (navigator.share) {
+      navigator.share({
+        title: `${car.brand} ${car.model}`,
+        text: `Harika bir kiralık araç buldum: ${car.brand} ${car.model}`,
+        url: window.location.origin + '/fleet/' + car.id
+      }).catch(console.error);
+    } else {
+      navigator.clipboard.writeText(window.location.origin + '/fleet/' + car.id);
+      alert('Bağlantı kopyalandı!');
+    }
+  }
+
+  rentCar(car: Car, event?: Event) {
+    if (event) event.stopPropagation();
     const request = {
       type: 'RENTAL' as const,
       item: car,
-      itemName: `${car.brand} ${car.model} ${this.withDriver() ? '(Şoförlü)' : ''}`,
+      itemName: `${car.brand} ${car.model} ${this.withDriver() ? this.t().car.withDriverLabel : ''}`,
       image: car.image,
       basePrice: car.price, // Send daily price
       startDate: this.startDate,
@@ -255,28 +464,5 @@ export class FleetComponent implements OnInit {
 
     this.carService.setBookingRequest(request);
     this.uiService.toggleContact(true);
-  }
-
-  translateDbValue(value: string, category: 'fuel' | 'transmission' | 'type'): string {
-    const t = this.uiService.translations();
-    // Map DB values (TR) to translation keys
-    if (category === 'fuel') {
-      if (value === 'Dizel') return t.car.diesel;
-      if (value === 'Benzin') return t.car.gasoline;
-      if (value === 'Hibrit') return t.car.hybrid;
-      if (value === 'Elektrik') return t.car.electric;
-    }
-    if (category === 'transmission') {
-      if (value === 'Otomatik') return t.car.auto;
-      if (value === 'Manuel') return t.car.manual;
-    }
-    if (category === 'type') {
-      if (value === 'SUV') return t.filters.suv;
-      if (value === 'Sedan') return t.filters.sedan;
-      if (value === 'Hatchback') return t.filters.hatchback;
-      if (value === 'Pickup') return t.filters.pickup;
-      if (value === 'Luxury') return t.filters.luxury;
-    }
-    return value;
   }
 }

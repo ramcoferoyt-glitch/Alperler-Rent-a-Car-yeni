@@ -1,59 +1,96 @@
 
 import { Component, inject, OnInit, signal, effect } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { CommonModule, Location } from '@angular/common';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { UiService } from '../services/ui.service';
 import { CarService } from '../services/car.service';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-legal',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule, RouterModule],
   template: `
-    <div class="bg-white min-h-screen pt-28 pb-20 font-sans">
-      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h1 class="font-serif text-3xl md:text-4xl font-bold text-slate-900 mb-8 pb-4 border-b border-slate-200">
-            {{ title() }}
-        </h1>
-        <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line" [innerHTML]="content()">
-        </div>
+    <div class="bg-slate-50 min-h-screen font-sans">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         
-        <div class="mt-8 text-center">
-            <button (click)="close()" class="bg-slate-900 text-white px-6 py-2 rounded-lg font-bold hover:bg-slate-700 transition-colors">Kapat</button>
-        </div>
+        @if (!currentType()) {
+          <div class="text-center mb-10">
+            <h1 class="text-4xl font-serif font-bold text-slate-900 mb-4">Kurumsal & Yasal</h1>
+            <p class="text-slate-500 text-lg">Şirket politikalarımız, yasal metinlerimiz ve sıkça sorulan sorular.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            @for (doc of documents; track doc.id) {
+              <a [routerLink]="doc.path" [queryParams]="doc.query" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 hover:shadow-md hover:border-amber-500 transition-all flex items-center justify-between group cursor-pointer">
+                <div class="flex items-center gap-4">
+                  <div class="w-12 h-12 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-amber-50 transition-colors">
+                    <mat-icon class="text-slate-400 group-hover:text-amber-500">{{ doc.icon }}</mat-icon>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-slate-900 group-hover:text-amber-600 transition-colors">{{ doc.title }}</h3>
+                  </div>
+                </div>
+                <mat-icon class="text-slate-300 group-hover:text-amber-500 transition-colors">chevron_right</mat-icon>
+              </a>
+            }
+          </div>
+        } @else {
+          <div class="bg-white rounded-3xl shadow-xl overflow-hidden">
+            <div class="p-6 sm:p-10">
+              <button (click)="clearType()" class="mb-8 flex items-center text-sm font-bold text-slate-500 hover:text-amber-600 transition-colors">
+                <mat-icon class="mr-1 text-sm">arrow_back</mat-icon>
+                Kurumsal Menüye Dön
+              </button>
+              
+              <h1 class="text-3xl font-serif font-bold text-slate-900 mb-8">{{ title() }}</h1>
+              <div class="prose prose-slate max-w-none text-slate-600 leading-relaxed whitespace-pre-line" [innerHTML]="content()">
+              </div>
+            </div>
+          </div>
+        }
+
       </div>
     </div>
   `
 })
 export class LegalComponent implements OnInit {
   route = inject(ActivatedRoute);
+  router = inject(Router);
   uiService = inject(UiService);
   carService = inject(CarService);
+  location = inject(Location);
   config = this.carService.getConfig();
   
+  currentType = signal<string | null>(null);
   title = signal('');
   content = signal('');
 
-  constructor() {
-      effect(() => {
-          const type = this.uiService.legalType();
-          if (type) {
-              this.setContent(type);
-          }
-      });
-  }
+  documents = [
+    { id: 'terms', title: 'Kullanım Şartları', icon: 'gavel', path: ['/legal'], query: { type: 'terms' } },
+    { id: 'kvkk', title: 'KVKK Aydınlatma Metni', icon: 'policy', path: ['/legal'], query: { type: 'kvkk' } },
+    { id: 'privacy', title: 'Gizlilik Politikası', icon: 'privacy_tip', path: ['/legal'], query: { type: 'privacy' } },
+    { id: 'cookies', title: 'Çerez Politikası', icon: 'cookie', path: ['/legal'], query: { type: 'cookies' } },
+    { id: 'distance-selling', title: 'Mesafeli Satış Sözleşmesi', icon: 'receipt_long', path: ['/legal'], query: { type: 'distance-selling' } },
+    { id: 'cancellation', title: 'İade ve İptal Politikası', icon: 'assignment_return', path: ['/legal'], query: { type: 'cancellation' } },
+    { id: 'insurance', title: 'Araç Sigorta ve Sorumluluk', icon: 'health_and_safety', path: ['/legal'], query: { type: 'insurance' } },
+    { id: 'faq', title: 'Sıkça Sorulan Sorular', icon: 'help_outline', path: ['/faq'], query: {} }
+  ];
 
   ngOnInit() {
-      this.route.data.subscribe(data => {
-          if (data['type']) {
-             this.setContent(data['type']);
+      this.route.queryParams.subscribe(params => {
+          if (params['type']) {
+             this.currentType.set(params['type']);
+             this.setContent(params['type']);
              window.scrollTo(0,0);
+          } else {
+             this.currentType.set(null);
           }
       });
   }
 
-  close() {
-      this.uiService.openLegal(null as any); // Close overlay
+  clearType() {
+      this.router.navigate(['/legal']);
   }
 
   setContent(type: string) {

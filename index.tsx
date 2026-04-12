@@ -6,6 +6,11 @@ import { AppComponent } from './src/app.component';
 import { routes } from './src/app.routes';
 import { APP_BASE_HREF } from '@angular/common';
 
+// AI Studio önizleme ekranında (iframe) sayfa yenilendiğinde her zaman ana sayfadan başlaması için:
+if (window.self !== window.top) {
+  window.location.hash = '';
+}
+
 bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),

@@ -2,16 +2,29 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CarService } from '../services/car.service';
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-faq',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
-    <div class="bg-slate-50 min-h-screen pt-28 pb-20 font-sans">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="bg-slate-50 min-h-screen font-sans">
+      <!-- Sticky Module Header -->
+      <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="h-16 flex items-center gap-3">
+            <button (click)="goBack()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 shrink-0" aria-label="Geri Dön">
+              <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h1 class="text-lg font-bold text-slate-900">Sıkça Sorulan Sorular</h1>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="text-center mb-12">
-           <h1 class="font-serif text-4xl font-bold text-slate-900 mb-4">Sıkça Sorulan Sorular</h1>
            <p class="text-slate-500">Aklınıza takılan tüm soruların cevapları burada.</p>
         </div>
 
@@ -40,7 +53,12 @@ import { CarService } from '../services/car.service';
 })
 export class FaqComponent {
   carService = inject(CarService);
+  router = inject(Router);
   faqs = this.carService.getFaqs();
+
+  goBack() {
+    this.router.navigate(['/']);
+  }
 
   toggleFaq(id: number) {
     // We need to update the local state or service state. 

@@ -391,15 +391,33 @@ import { SiteConfig, TeamMember } from '../../models/site-config.model';
                <div class="space-y-4">
                   <h3 class="font-bold text-lg border-b pb-2 text-slate-700">Admin Hesap Bilgileri</h3>
                   <div class="bg-slate-50 p-6 rounded-lg border border-slate-200">
-                      <p class="text-sm text-slate-500 mb-4">Admin paneline giriş yapmak için kullandığınız kullanıcı adı (e-posta) ve şifreyi buradan güncelleyebilirsiniz.</p>
-                      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <p class="text-sm text-slate-500 mb-4">Admin paneline giriş yapmak için kullandığınız e-posta ve şifreyi buradan güncelleyebilirsiniz. Şifre değiştirmek için mevcut şifrenizi girmelisiniz.</p>
+                      
+                      <div class="space-y-4 max-w-md">
                           <div>
                              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Kullanıcı Adı (E-Posta)</label>
                              <input [(ngModel)]="adminUser" name="adminUser" type="email" class="w-full p-3 bg-white border rounded font-bold" required>
                           </div>
-                          <div>
-                             <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Yeni Şifre</label>
-                             <input [(ngModel)]="adminPass" name="adminPass" type="password" class="w-full p-3 bg-white border rounded" placeholder="Değiştirmek istemiyorsanız boş bırakın">
+                          
+                          <div class="pt-4 border-t border-slate-200">
+                             <h4 class="font-bold text-sm text-slate-700 mb-4">Şifre Değiştirme</h4>
+                             
+                             <div class="space-y-4">
+                                 <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Mevcut Şifre <span class="text-red-500">*</span></label>
+                                    <input [(ngModel)]="currentPass" name="currentPass" type="password" class="w-full p-3 bg-white border rounded" placeholder="Şifre değiştirmek için zorunludur">
+                                 </div>
+                                 
+                                 <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Yeni Şifre</label>
+                                    <input [(ngModel)]="adminPass" name="adminPass" type="password" class="w-full p-3 bg-white border rounded" placeholder="En az 8 karakter, 1 büyük harf, 1 rakam">
+                                 </div>
+                                 
+                                 <div>
+                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Yeni Şifre (Tekrar)</label>
+                                    <input [(ngModel)]="adminPassConfirm" name="adminPassConfirm" type="password" class="w-full p-3 bg-white border rounded" placeholder="Yeni şifrenizi tekrar girin">
+                                 </div>
+                             </div>
                           </div>
                       </div>
                   </div>
@@ -428,8 +446,10 @@ export class AdminSettingsComponent {
   saveSuccess = signal(false);
   activeTab = signal<'general' | 'content' | 'team' | 'legal' | 'faq' | 'account'>('general');
   
-  adminUser = localStorage.getItem('adminUser') || 'ishak595@gmail.com';
+  adminUser = this.authService.getCurrentEmail();
+  currentPass = '';
   adminPass = ''; // Don't show current password
+  adminPassConfirm = '';
 
   newFaq: Partial<FaqItem> = {};
 
@@ -469,13 +489,54 @@ export class AdminSettingsComponent {
 
   saveConfig(event: Event) {
       event.preventDefault();
+      
+      // Handle password change validation
+      if (this.adminPass || this.currentPass || this.adminPassConfirm) {
+          if (!this.currentPass) {
+              this.toastService.show('Güvenlik için mevcut şifrenizi girmelisiniz.', 'error');
+              this.activeTab.set('account');
+              return;
+          }
+          
+          if (!this.authService.verifyCredentials(this.currentPass)) {
+              this.toastService.show('Mevcut şifreniz hatalı.', 'error');
+              this.activeTab.set('account');
+              return;
+          }
+          
+          if (this.adminPass || this.adminPassConfirm) {
+              if (this.adminPass !== this.adminPassConfirm) {
+                  this.toastService.show('Yeni şifreler eşleşmiyor.', 'error');
+                  this.activeTab.set('account');
+                  return;
+              }
+              
+              // Password complexity: min 8 chars, 1 uppercase, 1 number
+              const complexRegex = /^(?=.*[A-Z])(?=.*\d).{8,}$/;
+              if (!complexRegex.test(this.adminPass)) {
+                  this.toastService.show('Yeni şifre en az 8 karakter uzunluğunda olmalı, en az 1 büyük harf ve 1 rakam içermelidir.', 'error');
+                  this.activeTab.set('account');
+                  return;
+              }
+          }
+      }
+      
       this.carService.updateConfig(this.formConfig);
       
       // Update admin credentials if provided
       if (this.adminUser) {
-          const passToSave = this.adminPass ? this.adminPass : (localStorage.getItem('adminPass') || 'i4h4k5a2p7r7');
-          this.authService.updateCredentials(this.adminUser, passToSave);
-          this.adminPass = ''; // Clear password field after save
+          const passToSave = this.adminPass ? this.adminPass : this.currentPass;
+          if (passToSave && this.authService.verifyCredentials(this.currentPass || passToSave)) {
+              this.authService.updateCredentials(this.adminUser, passToSave);
+          } else if (!this.adminPass && !this.currentPass) {
+              // Only updating email
+              const currentValidPass = localStorage.getItem('adminPass') || 'i4h4k5a2p7r7';
+              this.authService.updateCredentials(this.adminUser, currentValidPass);
+          }
+          
+          this.currentPass = '';
+          this.adminPass = '';
+          this.adminPassConfirm = '';
       }
 
       this.saveSuccess.set(true);

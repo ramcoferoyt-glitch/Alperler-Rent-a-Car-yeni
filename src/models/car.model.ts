@@ -1,14 +1,104 @@
-export interface Car {
-  id: number;
+export interface Vehicle {
+  id: string | number;
+  category: 'RENTAL' | 'SALE';
+  title?: string;
   brand: string;
   model: string;
-  type: 'SUV' | 'Sedan' | 'Hatchback' | 'Luxury' | 'Sport' | 'Pickup';
+  series?: string;
+  year: number;
+  type?: 'SUV' | 'Sedan' | 'Hatchback' | 'Luxury' | 'Sport' | 'Pickup';
   transmission: 'Otomatik' | 'Manuel';
   fuel: 'Benzin' | 'Dizel' | 'Hibrit' | 'Elektrik';
-  price: number;
+  price: number; // Daily price for rental, total price for sale
   image: string;
   images?: string[];
-  seats: number;
+  gallery?: string[];
+  location?: string;
+  description?: string;
   features: string[];
-  isAvailable: boolean;
+  
+  // Rental specific
+  seats?: number;
+  isAvailable?: boolean;
+  deposit?: number;
+  minAge?: number;
+  minLicenseYears?: number;
+  dailyMileageLimit?: number;
+
+  // Sale specific
+  km?: number;
+  detailedFeatures?: {
+      interior: string[];
+      exterior: string[];
+      multimedia: string[];
+      safety: string[];
+  };
+  engineVolume?: string;
+  enginePower?: string;
+  drivetrain?: string;
+  damageStatus?: string;
+  expertReport?: string;
+  color?: string;
+  warranty?: string;
+  
+  // Badges & Status
+  badge?: 'FIRSAT' | 'YENİ' | 'ACİL' | 'POPÜLER' | 'PREMIUM' | 'UYGUN FİYAT' | 'YENİ GİRİŞ' | '' | string;
+  viewers?: number;
+  isLastCar?: boolean;
+  isPriceDropped?: boolean;
+  daysLeft?: number;
+  favCount?: number;
+  isPopular?: boolean;
+  isFeatured?: boolean;
+  isCampaign?: boolean;
+  discountRate?: number;
+  createdAt?: string;
+  isPaintless?: boolean;
+  isReplaceFree?: boolean;
+  isDamageFree?: boolean;
+  hasWarranty?: boolean;
+  paintedParts?: string;
+  availability?: string;
+
+  // Technical Specs
+  fuelConsumption?: string;
+  acceleration?: string;
+  maxSpeed?: string;
+  length?: string;
+  width?: string;
+  height?: string;
+  trunkVolume?: string;
+  weight?: string;
+  cylinderCount?: number;
+  fuelTankCapacity?: string;
+  torque?: string;
+  kaskoValue?: string;
+  cityFuelConsumption?: string;
+  highwayFuelConsumption?: string;
+  wheelSize?: string;
+  tramer?: string;
+  damageExpertise?: {
+    hood?: 'original' | 'painted' | 'changed';
+    frontBumper?: 'original' | 'painted' | 'changed';
+    rearBumper?: 'original' | 'painted' | 'changed';
+    roof?: 'original' | 'painted' | 'changed';
+    trunk?: 'original' | 'painted' | 'changed';
+    frontLeftDoor?: 'original' | 'painted' | 'changed';
+    frontRightDoor?: 'original' | 'painted' | 'changed';
+    rearLeftDoor?: 'original' | 'painted' | 'changed';
+    rearRightDoor?: 'original' | 'painted' | 'changed';
+    frontLeftFender?: 'original' | 'painted' | 'changed';
+    frontRightFender?: 'original' | 'painted' | 'changed';
+    rearLeftFender?: 'original' | 'painted' | 'changed';
+    rearRightFender?: 'original' | 'painted' | 'changed';
+  };
+  
+  // Showcase flags
+  popularityScore?: number;
+  displayPriority?: number;
 }
+
+// Keep Car and SaleCar as aliases for backward compatibility during refactoring if needed,
+// but ideally we should migrate everything to Vehicle.
+export type Car = Vehicle;
+export type SaleCar = Vehicle;

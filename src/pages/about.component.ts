@@ -3,22 +3,30 @@ import { Component, inject } from '@angular/core';
 import { CarService } from '../services/car.service';
 import { UiService } from '../services/ui.service';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-about',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MatIconModule],
   template: `
-    <div class="bg-white font-sans min-h-screen relative z-[60]">
+    <div class="bg-white font-sans min-h-screen">
        
-       <!-- Close Button -->
-       <button (click)="close()" class="fixed top-6 right-6 z-50 bg-slate-900 text-white hover:bg-amber-500 hover:text-slate-900 rounded-full p-3 transition-all duration-300 shadow-lg border border-white/20 group">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-          <span class="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-slate-900 text-white text-xs font-bold px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Kapat</span>
-       </button>
+       <!-- Sticky Module Header -->
+       <div class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+         <div class="max-w-7xl mx-auto px-4">
+           <div class="h-16 flex items-center gap-3">
+             <button (click)="goBack()" class="p-2 hover:bg-slate-100 rounded-full transition-colors text-slate-600 shrink-0" aria-label="Geri Dön">
+               <mat-icon>arrow_back</mat-icon>
+             </button>
+             <h1 class="text-lg font-bold text-slate-900">{{ t().nav.about }}</h1>
+           </div>
+         </div>
+       </div>
 
        <!-- Header -->
-       <div class="relative bg-slate-900 h-[500px] flex items-center justify-center overflow-hidden">
+       <div class="relative bg-slate-900 h-[400px] flex items-center justify-center overflow-hidden">
           <div class="absolute inset-0">
             <img src="https://picsum.photos/id/1018/1920/800" alt="Alperler Kurumsal" class="w-full h-full object-cover opacity-30">
           </div>
@@ -74,9 +82,11 @@ import { CommonModule } from '@angular/common';
 export class AboutComponent {
     carService = inject(CarService);
     uiService = inject(UiService);
+    router = inject(Router);
     config = this.carService.getConfig();
+    t = this.uiService.translations;
 
-    close() {
-        this.uiService.toggleAbout(false);
+    goBack() {
+        this.router.navigate(['/']);
     }
 }

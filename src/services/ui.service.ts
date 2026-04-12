@@ -63,45 +63,235 @@ export class UiService {
     this.currentLang.set(lang);
   }
 
+  translateDbValue(value: string, category: 'fuel' | 'transmission' | 'type' | 'damage'): string {
+    if (!value) return '';
+    const t = this.translations();
+    const val = value.toLowerCase();
+
+    if (category === 'fuel') {
+      if (val.includes('dizel')) return t.car.diesel;
+      if (val.includes('benzin')) return t.car.gasoline;
+      if (val.includes('hibrit')) return t.car.hybrid;
+      if (val.includes('elektrik')) return t.car.electric;
+    }
+
+    if (category === 'transmission') {
+      if (val.includes('otomatik') || val.includes('auto')) return t.car.auto;
+      if (val.includes('manuel') || val.includes('manual')) return t.car.manual;
+    }
+
+    if (category === 'type') {
+      if (val === 'suv') return t.filters.suv;
+      if (val === 'sedan') return t.filters.sedan;
+      if (val === 'hatchback') return t.filters.hatchback;
+      if (val === 'pickup') return t.filters.pickup;
+      if (val === 'luxury' || val === 'lüks') return t.filters.luxury;
+    }
+
+    if (category === 'damage') {
+      if (val.includes('hatasız') || val.includes('boyasız')) return t.car.noDamageRecord;
+      if (val.includes('boyalı')) return t.car.damageStatus;
+    }
+
+    return value;
+  }
+
   // --- TRANSLATIONS ---
   private dictionary: Record<Language, any> = {
     TR: {
-      nav: { home: 'Ana Sayfa', fleet: 'Araç Filosu', sales: '2. El Satış', about: 'Hakkımızda', contact: 'İletişim', blog: 'Blog' },
+      nav: { home: 'Ana Sayfa', fleet: 'Araç Filosu', sales: '2. El Satış', tours: 'Turlar', earn: 'Aracını Değerlendir', about: 'Hakkımızda', contact: 'İletişim', blog: 'Blog', corporate: 'Kurumsal' },
       hero: { title: 'Yüksekova\'da Güvenli Kiralama, Satış ve Filo Hizmetleri', subtitle: 'İster şoförlü ister şoförsüz kiralayın, ister güvenle araç satın alın, isterseniz aracınızı bize kiralayıp gelir elde edin. Alperler güvencesiyle hepsi tek adreste.', cta: 'Hemen Kirala' },
-      buttons: { close: 'Kapat', book: 'Rezervasyon Yap', details: 'Detaylar', call: 'Hemen Ara', send: 'Gönder', rent: 'Hemen Kirala', rentDriver: 'Şoförlü Kirala', notAvailable: 'Müsait Değil', remove: 'Kaldır', apply: 'Başvuruyu Gönder', viewAll: 'Tümünü İncele', viewTours: 'Tüm Turları Görüntüle', backHome: 'Ana Sayfaya Dön', complete: 'Tamamla', pay: 'Öde ve Bitir' },
+      buttons: { back: 'Geri Dön', close: 'Kapat', book: 'Rezervasyon Yap', details: 'Detaylar', call: 'Hemen Ara', send: 'Gönder', rent: 'Hemen Kirala', rentDriver: 'Şoförlü Kirala', notAvailable: 'Müsait Değil', remove: 'Kaldır', apply: 'Başvuruyu Gönder', viewAll: 'Tümünü İncele', viewAllFleet: 'TÜM KİRALIK ARABALAR', viewAllSales: 'TÜM SATILIK ARABALAR', viewTours: 'Tüm Turları Görüntüle', backHome: 'Ana Sayfaya Dön', complete: 'Tamamla', pay: 'Öde ve Bitir', appointment: 'Randevu Talep Et' },
 
-      filters: { all: 'Tümü', suv: 'SUV', pickup: 'Pikap', sedan: 'Sedan', hatchback: 'Ekonomik', luxury: 'Lüks', driverActive: 'Şoförlü Kiralama Seçeneği Aktif', rented: 'KİRALANDI' },
+      filters: { all: 'Tümü', suv: 'SUV', pickup: 'Pikap', sedan: 'Sedan', hatchback: 'Ekonomik', luxury: 'Lüks', driverActive: 'Şoförlü Kiralama Seçeneği Aktif', rented: 'KİRALANDI', brand: 'Marka ve Model', series: 'Seri', priceRange: 'Fiyat Aralığı', kmRange: 'Kilometre Aralığı', color: 'Renk', engine: 'Motor Gücü / Hacmi', fuel: 'Yakıt Tipi', transmission: 'Vites Tipi', year: 'Model Yılı', damage: 'Hasar Durumu' },
       sort: { label: 'Sıralama', default: 'Önerilen', priceAsc: 'Fiyat: Artan', priceDesc: 'Fiyat: Azalan' },
-      car: { day: 'gün', transmission: 'Vites', seats: 'Kişilik', fuel: 'Yakıt', auto: 'Otomatik', manual: 'Manuel', diesel: 'Dizel', gasoline: 'Benzin', hybrid: 'Hibrit', electric: 'Elektrik', year: 'Model', km: 'KM' },
-      chat: { title: 'Canlı Destek', subtitle: 'Alperler Asistanı', placeholder: 'Bir şeyler yazın...', welcome: 'Merhaba! Alperler Rent A Car\'a hoş geldiniz. Size nasıl yardımcı olabilirim?' },
+      car: { 
+        day: 'gün', transmission: 'Vites', seats: 'Kişilik', fuel: 'Yakıt', auto: 'Otomatik', manual: 'Manuel', diesel: 'Dizel', gasoline: 'Benzin', hybrid: 'Hibrit', electric: 'Elektrik', year: 'Model', km: 'KM', overview: 'Genel Bakış', availability: 'Müsaitlik Durumu', available: 'Müsait', similarCars: 'Benzer Araçlar', description: 'Açıklama', features: 'Özellikler', insured: 'Kaskolu', viewersCount: 'kişi şu an bu aracı inceliyor', expertReport: 'Ekspertizli', lastCar: 'Son Araç', buyNow: 'Satın Al', details: 'Detaylar', rentNow: 'Hemen Kirala', whatsappMsg: 'Merhaba, {brand} {model} ({year}) aracınız hakkında bilgi almak istiyorum. Link: {url}', inquiryMeet: 'RANDEVU TALEBİ: Aracı yerinde görüp incelemek istiyorum.', inquiryInfo: 'SATIN ALMA TALEBİ: Araç hakkında detaylı görüşmek istiyorum.', withDriverLabel: '(Şoförlü)', deposit: 'Depozito', minAge: 'Min. Yaş', minLicenseYears: 'Ehliyet Yılı', years: 'Yıl', dontMiss: 'Bu Fırsatı Kaçırma!', priceDropped: 'Fiyat düştü', todayViewers: 'Bugün {n} kişi bu ilana baktı', daysLeft: 'İlanın yayında kalacağı son {n} gün', engineVolume: 'Motor Hacmi', enginePower: 'Motor Gücü', drivetrain: 'Çekiş', color: 'Renk', warranty: 'Garanti', damageStatus: 'Hasar Kaydı', paintedParts: 'Boyalı Parçalar', noPaintedParts: 'Boyasız', noReplacedParts: 'Değişensiz', noDamageRecord: 'Hasar Kayıtsız', hasWarranty: 'Garantili', discount: 'Büyük İndirim', paintlessReplaceFree: 'Boyasız / Değişensiz', accidentFree: 'Kazasız', inspectNow: 'Hemen İncele', sendSaleRequest: 'Satış Talebi Gönder', popularListing: 'Çok Popüler İlan', height: 'Yükseklik', trustBadge: 'Güvenli Alışveriş', fastResponse: 'Hızlı Geri Dönüş',
+        opportunity: 'Fırsat İlan',
+        purchaseRequest: 'Satın Alma Talebi',
+        rentalRequest: 'Kiralama Talebi',
+        expertiseReady: 'Ekspertiz Hazır', tradeAvailable: 'Takasa Uygun',
+        premiumGallery: 'Premium Galeri',
+        location: 'Hakkari / Yüksekova', appointmentInfo: 'Randevu ile gösterim yapılır',
+        listingNo: 'İlan No', listingDate: 'İlan Tarihi',
+        featuredFeatures: 'Öne Çıkan Özellikler', allFeatures: 'Tüm Özellikleri Gör', damageExpertise: 'Hasar ve Ekspertiz', sellerInfo: 'Satıcı Bilgileri', locationDelivery: 'Konum ve Teslimat',
+        generalStatus: 'Genel Durum', mechanicalStatus: 'Mekanik Durum', equipment: 'Donanım', cosmeticStatus: 'Kozmetik Durum', extraInfo: 'Ek Bilgi',
+        verifiedSeller: 'Doğrulanmış Satıcı', royalDrive: 'Royal Drive Auto', zirveAuto: 'Zirve Auto Premium', northline: 'Northline Gallery',
+        eidsVerified: 'EİDS Doğrulandı', originalChassis: 'Şase Orijinal', originalAirbag: 'Airbag Orijinal', cleanInterior: 'İç Aksam Temiz', expertDocAvailable: 'Ekspertiz Belgesi Mevcut',
+        openLocation: 'Konumu Aç', sendMessage: 'Mesaj Gönder', callNow: 'Hemen Ara', whatsappAsk: 'WhatsApp\'tan Sor',
+        highInterest: 'Son 24 saatte yoğun ilgi gördü', topViewed: 'Bugün en çok bakılan ilanlardan biri', advantageousPrice: 'Emsallerine göre avantajlı fiyat'
+      },
+      chat: { 
+          title: 'Alper AI', 
+          subtitle: 'Size nasıl yardımcı olabilirim?', 
+          placeholder: 'Mesajınızı yazın...', 
+          welcome: 'Merhaba! Ben Alper AI, size araç kiralama veya satış süreçlerinde yardımcı olabilirim. Ne sormak istersiniz?',
+          voiceAssistant: 'SESLİ ASİSTAN',
+          listening: 'Sizi Dinliyorum...',
+          speaking: 'Cevap Veriyorum...',
+          thinking: 'Düşünüyorum...',
+          tapToSpeak: 'Dokun ve Konuş',
+          prompt: 'Size nasıl yardımcı olabilirim?',
+          online: 'Online'
+      },
+      fleet: {
+          subtitle: 'Yüksekova yollarına uygun, güçlü ve konforlu araçlar.',
+          searchPlaceholder: 'Araç Ara (Marka, Model...)',
+          filterType: 'Araç Tipi Filtreleri',
+          filterBtn: 'Filtrele',
+          sortBtn: 'Sırala'
+      },
+      footer: {
+        rights: 'Tüm Hakları Saklıdır.',
+        support: '7/24 Canlı Destek',
+        corporate: 'Kurumsal',
+        legal: 'Yasal',
+        newsletter: 'Bülten Aboneliği',
+        newsletterSub: 'Kampanyalardan ve yeni araçlardan haberdar olmak için ücretsiz abone olun.',
+        emailPlaceholder: 'E-posta adresiniz',
+        subscribeBtn: 'Ücretsiz Abone Ol',
+        subscribeSuccess: 'Tebrikler! Bültenimize başarıyla abone oldunuz. Kampanyalarımızdan ilk siz haberdar olacaksınız.',
+        contactUs: 'Bize Ulaşın',
+        contactBtn: 'İletişime Geç',
+        contactText: 'Sorularınız mı var? 7/24 destek hattımız hizmetinizde.',
+        designed: 'Designed with ❤️ in Yüksekova',
+        footerText: 'Your travel companion with reliable car rental service in Yüksekova. Premium service, safe journey.',
+        links: {
+            kvkk: 'KVKK Aydınlatma Metni',
+            privacy: 'Gizlilik Politikası',
+            cookies: 'Çerez Politikası',
+            terms: 'Kiralama Koşulları',
+            faq: 'Sıkça Sorulan Sorular',
+            distanceSelling: 'Mesafeli Satış Sözleşmesi',
+            cancellation: 'İade ve İptal Politikası',
+            insurance: 'Araç Sigorta ve Sorumluluk'
+        },
+        feedbackBtn: 'Geri Bildirim Gönder'
+      },
+      about: {
+        title: 'Hakkımızda',
+        story: 'Kurumsal Hikayemiz',
+        teamTitle: 'Yönetim ve Operasyon',
+        teamSubtitle: 'Profesyonel hizmet, aile sıcaklığı.'
+      },
+      contact: {
+        title: 'İletişim',
+        subtitle: '7/24 Yanınızdayız',
+        infoTitle: 'İletişim Bilgileri',
+        formTitle: 'Bize Ulaşın',
+        formSubtitle: 'Sorularınız veya talepleriniz için formu doldurun.',
+        name: 'Adınız',
+        surname: 'Soyadınız',
+        phone: 'Telefon',
+        email: 'E-Posta Adresi',
+        message: 'Mesajınız',
+        send: 'Gönder',
+        successTitle: 'İşleminiz Başarıyla Alındı!',
+        successText: 'Talebiniz bize ulaştı. En kısa sürede size dönüş yapılacaktır.',
+        summary: 'Sipariş Özeti',
+        personalInfo: 'Kişisel Bilgiler',
+        paymentMethod: 'Ödeme Yöntemi',
+        creditCard: 'Kredi Kartı',
+        office: 'Ofiste Öde',
+        eft: 'Havale / EFT',
+        total: 'Toplam Tutar',
+        days: 'Gün',
+        checkout: {
+          cancel: 'Vazgeç ve Siteye Dön',
+          securePayment: 'GÜVENLİ ÖDEME & REZERVASYON',
+          requestCreation: 'TALEP OLUŞTURMA',
+          summary: 'Sipariş Özeti',
+          rentalService: 'Kiralama Hizmeti',
+          tourService: 'Tur Hizmeti',
+          saleRequest: 'Satın Alma Talebi',
+          rentalType: 'Kiralama Türü',
+          withDriver: 'Şoförlü Hizmet',
+          pickupDate: 'Alış Tarihi',
+          returnDate: 'Dönüş Tarihi',
+          dailyPrice: 'Günlük Fiyat',
+          duration: 'Süre',
+          total: 'Toplam Tutar',
+          estimatedPrice: 'Tahmini Bedel',
+          successTitle: 'İşleminiz Başarıyla Alındı!',
+          bookingCode: 'Rezervasyon Kodunuz:',
+          goHome: 'Ana Sayfaya Dön',
+          personalInfo: 'Kişisel Bilgiler',
+          paymentMethod: 'Ödeme Yöntemi',
+          creditCard: 'Kredi Kartı',
+          payAtOffice: 'Ofiste Öde',
+          eft: 'Havale / EFT',
+          securePaymentBadge: '256-Bit SSL Güvenli Ödeme',
+          cardName: 'Kart Üzerindeki İsim Soyisim',
+          cardNumber: 'Kart Numarası',
+          expiryDate: 'Son Kullanma Tarihi',
+          month: 'Ay',
+          year: 'Yıl',
+          cvv: 'CVV Güvenlik Kodu',
+          officeSelected: 'Ofiste Ödeme Seçildi',
+          officeDesc: 'Rezervasyonunuz oluşturulacak. Araç tesliminde nakit veya kredi kartı ile ödeme yapabilirsiniz.',
+          bankName: 'Ziraat Bankası',
+          receiver: 'ALICI: ALPERLER OTO KİRALAMA LTD. ŞTİ.',
+          eftNotice: 'Önemli: Lütfen açıklama kısmına AD SOYAD yazınız. İşlem sonrası dekontu WhatsApp hattımıza iletiniz.',
+          connectingBank: 'Banka ile İletişim Kuruluyor...',
+          processing: 'İşlem Tamamlanıyor...',
+          confirmAndFinish: 'Ödemeyi Onayla ve Bitir',
+          completeBooking: 'Rezervasyonu Tamamla',
+          sendRequest: 'Talebi Gönder',
+          termsNotice: '"Tamamla" butonuna basarak Mesafeli Satış Sözleşmesi\'ni kabul etmiş olursunuz.',
+          successRentalCC: 'Ödemeniz güvenli bir şekilde alındı. Araç teslimatı için ofisimizde bekleniyorsunuz.',
+          successRentalEFT: 'Havale bildiriminiz alındı. Lütfen ödeme dekontunu 0537 959 48 51 WhatsApp hattımıza iletiniz.',
+          successRentalOffice: 'Rezervasyonunuz oluşturuldu. Ödemeyi ofiste araç teslimi sırasında yapabilirsiniz.',
+          successOther: 'Talebiniz bize ulaştı. En kısa sürede {phone} numarasından size dönüş yapılacaktır.',
+          formSuccess: 'Mesajınız iletildi! Teşekkürler.'
+        }
+      },
       feedback: {
-          title: 'Geri Bildirim Gönder',
-          subtitle: 'Görüşleriniz bizim için değerli.',
-          category: 'Kategori',
-          rating: 'Puanınız',
-          message: 'Mesajınız',
-          placeholder: 'Deneyiminizi bizimle paylaşın...',
-          submit: 'Gönder',
-          success: 'Geri bildiriminiz için teşekkürler!',
-          categories: {
-              BUG: 'Hata Bildirimi',
-              FEATURE: 'Özellik İsteği',
-              GENERAL: 'Genel Görüş',
-              CONTENT: 'İçerik Hatası',
-              OTHER: 'Diğer'
-          },
-          analysis: {
-              title: 'Geri Bildirim Analizi (AI)',
-              btn: 'Analiz Et',
-              loading: 'Analiz ediliyor...',
-              empty: 'Henüz analiz edilecek veri yok.'
-          }
+        title: 'Geri Bildirim Gönder',
+        subtitle: 'Görüşleriniz bizim için değerli.',
+        category: 'Kategori',
+        rating: 'Puanınız',
+        message: 'Mesajınız',
+        placeholder: 'Deneyiminizi bizimle paylaşın...',
+        submit: 'Gönder',
+        success: 'Geri bildiriminiz için teşekkürler!',
+        categories: {
+          BUG: 'Hata Bildirimi',
+          FEATURE: 'Özellik İsteği',
+          GENERAL: 'Genel Görüş',
+          CONTENT: 'İçerik Hatası',
+          OTHER: 'Diğer'
+        },
+        analysis: {
+          title: 'Geri Bildirim Analizi (AI)',
+          btn: 'Analiz Et',
+          loading: 'Analiz ediliyor...',
+          empty: 'Henüz analiz edilecek veri yok.'
+        },
+        hideAnalysis: 'Analizi Gizle',
+        aiAnalysis: 'Yönetici Analizi (AI)',
+        totalFeedback: 'Toplam Geri Bildirim:',
+        successSubtitle: 'Görüşleriniz hizmet kalitemizi artırmamıza yardımcı oluyor.'
+      },
+      common: {
+        close: 'Kapat',
+        favorites: 'Favoriler',
+        menuToggle: 'Menüyü Aç/Kapat',
+        addToFav: 'Favorilere Ekle',
+        removeFromFav: 'Favorilerden Çıkar'
       },
       home: {
         booking: {
             title: 'Hemen Araç Kirala',
             type: 'HİZMET TÜRÜ',
             types: { individual: 'Bireysel Kiralama', driver: 'Şoförlü Kiralama' },
+            duration: 'Kiralama Süresi',
+            durations: { 
+                hourly_6: 'Saatlik (En Az 6 Saat)', 
+                hourly_12: 'Saatlik (12 Saat)', 
+                daily: 'Günlük (1-29 Gün)', 
+                monthly: 'Aylık (30+ Gün)', 
+                longterm: 'Uzun Dönem (6+ Ay)' 
+            },
             pickup: 'ALIŞ YERİ',
             locations: { center: 'Yüksekova Merkez', airport: 'Yüksekova Havalimanı', bus: 'Yüksekova Otogar' },
             startDate: 'ALIŞ TARİHİ',
@@ -109,6 +299,7 @@ export class UiService {
             searchBtn: 'ARAÇ BUL'
         },
         featured: {
+            badge: 'KİRALIK ARAÇLAR',
             title: 'Öne Çıkan Filomuz',
             subtitle: 'SUV, Pikap ve Sedan seçenekleriyle her yola hazırız.',
             viewAll: 'Tümünü İncele',
@@ -121,6 +312,7 @@ export class UiService {
             badge: '2. El Galeri',
             title: 'Güvenilir Araç Sahibi Olun',
             description: 'Ekspertiz garantili, bakımlı ve temiz ikinci el araçlarımızla hayalinizdeki arabaya kavuşun. Takas imkanı ve uygun ödeme seçenekleri sizi bekliyor.',
+            viewAll: 'Tüm İkinci El Araçları Görüntüle',
             cta: 'Satılık Araçları İncele',
             stats: { expert: 'Ekspertiz Garantisi', months: 'Ay', warranty: 'Mekanik Garanti', trade: 'Takas', value: 'Değerinde Alım', credit: 'Kredi', finance: 'Hızlı Finansman' }
         },
@@ -134,35 +326,48 @@ export class UiService {
             }
         },
         partner: {
-            title: 'Aracınızı Bize Kiralayın',
-            subtitle: 'Aracınız yatarak değil, çalışarak kazandırsın. Alperler güvencesiyle aracınızı filomuza katın, düzenli gelir elde edin.',
+            title: 'Aracınızı Değerlendirin',
+            subtitle: 'Arabanız kapıda yatmasın, size kazanç getirsin! İster aracınızı bizim aracılığımızla güvenle satın, ister bize kiralayın; tüm operasyonel süreci biz yönetelim, siz kazancınıza odaklanın. Alperler güvencesiyle aracınız emin ellerde.',
             requirements: {
-                title: 'Başvuru Şartları',
-                year: 'En az 2018 Model olmalıdır.',
-                damage: 'Ağır hasar kaydı bulunmamalıdır.',
-                maintenance: 'Tüm bakımları yetkili serviste yapılmalıdır.'
+                title: 'Neden Bizi Seçmelisiniz?',
+                year: 'Güvenli Satış ve Kiralama',
+                damage: 'Tam Operasyonel Destek',
+                maintenance: 'Düzenli ve Şeffaf Ödeme'
             },
             form: {
-                title: 'Araç Başvuru Formu',
-                success: { title: 'Başvurunuz Alındı!', message: 'Uzman ekibimiz aracınızı inceleyip en kısa sürede size dönüş yapacaktır.' },
+                title: 'Hemen Başvurun',
+                success: { title: 'Başvurunuz Alındı!', message: 'Ekibimiz en kısa sürede sizinle iletişime geçecektir. Teşekkür ederiz.' },
                 name: 'Ad Soyad',
-                phone: 'Telefon',
-                car: 'Araç Marka/Model',
+                phone: 'Telefon Numarası',
+                email: 'E-posta Adresi',
+                car: 'Araç Marka ve Model',
                 year: 'Model Yılı',
-                km: 'Araç Kilometresi (KM)',
-                photos: 'Araç Fotoğrafları / Video',
-                upload: 'Fotoğraf veya Video Yükle',
-                maxFiles: '(Max 10 Dosya)',
-                notes: 'Ek Açıklama / Notlar',
-                notesPlaceholder: 'Araç hakkında eklemek istedikleriniz...',
-                submit: 'Başvuruyu Gönder'
+                km: 'Kilometre',
+                photos: 'Araç Fotoğrafları (Opsiyonel)',
+                upload: 'Fotoğrafları Buraya Sürükleyin veya Seçin',
+                maxFiles: 'Maksimum 5 dosya, her biri en fazla 10MB',
+                notes: 'Ek Notlar',
+                notesPlaceholder: 'Aracınızın durumu, istediğiniz fiyat veya sormak istedikleriniz...',
+                submit: 'Başvuruyu Gönder',
+                errors: {
+                    name: 'Lütfen adınızı ve soyadınızı giriniz.',
+                    phone: 'Lütfen geçerli bir telefon numarası giriniz.',
+                    email: 'Lütfen geçerli bir e-posta adresi giriniz.',
+                    car: 'Lütfen araç marka ve modelini giriniz.',
+                    km: 'Lütfen aracın kilometresini giriniz.'
+                }
             }
         },
         tours: {
-            title: 'Yüksekova Keşif Turları',
+            title: 'Keşif Turları',
             subtitle: 'Cilo Dağları\'ndan buzullara, eşsiz rotalar sizi bekliyor.',
             bookBtn: 'Rezervasyon Yap',
-            viewAll: 'Tüm Turları Görüntüle'
+            viewAll: 'Tüm Turları Görüntüle',
+            list: [
+                { id: 1, title: 'Cilo Dağları & Buzullar Turu', description: 'Türkiye\'nin en yüksek ikinci zirvesi olan Cilo Dağları\'nda unutulmaz bir macera. Buzul gölleri ve eşsiz manzaralar.', price: 1500, category: 'Doğa & Macera' },
+                { id: 2, title: 'Sat Gölleri Kamp Turu', description: 'Bölgenin saklı cenneti Sat Gölleri\'nde yıldızların altında kamp deneyimi. Profesyonel rehberler eşliğinde.', price: 2000, category: 'Kamp' },
+                { id: 3, title: 'Kültür & Gastronomi', description: 'Bölgenin zengin mutfağını ve tarihi dokusunu keşfedin. Yerel lezzetler ve kültürel duraklar.', price: 1200, category: 'Kültür' }
+            ]
         },
         campaigns: {
             early: 'Erken Rezervasyon İndirimi',
@@ -179,78 +384,69 @@ export class UiService {
         expert: 'Ekspertiz / Durum',
         appointment: 'Randevu Al',
         buy: 'Satın Al',
-        status: { forSale: 'Satılık' }
-      },
-      contact: {
-        title: 'İletişim',
-        subtitle: '7/24 Yanınızdayız',
-        infoTitle: 'İletişim Bilgileri',
-        formTitle: 'Bize Ulaşın',
-        formSubtitle: 'Sorularınız veya talepleriniz için formu doldurun.',
-        name: 'Adınız', surname: 'Soyadınız', phone: 'Telefon', email: 'E-Posta', message: 'Mesajınız',
-        successTitle: 'İşleminiz Başarıyla Alındı!',
-        successText: 'Talebiniz bize ulaştı. En kısa sürede size dönüş yapılacaktır.',
-        summary: 'Sipariş Özeti',
-        personalInfo: 'Kişisel Bilgiler',
-        paymentMethod: 'Ödeme Yöntemi',
-        creditCard: 'Kredi Kartı', office: 'Ofiste Öde', eft: 'Havale / EFT',
-        total: 'Toplam Tutar',
-        days: 'Gün',
-        checkout: {
-            cancel: 'Vazgeç ve Siteye Dön',
-            securePayment: 'GÜVENLİ ÖDEME & REZERVASYON',
-            createRequest: 'TALEP OLUŞTURMA',
-            rentalService: 'Kiralama Hizmeti',
-            tourService: 'Tur Hizmeti',
-            saleRequest: 'Satın Alma Talebi',
-            pickupDate: 'Alış Tarihi',
-            returnDate: 'Dönüş Tarihi',
-            dailyPrice: 'Günlük Fiyat',
-            duration: 'Süre',
-            estimatedCost: 'Tahmini Bedel',
-            reservationCode: 'Rezervasyon Kodunuz',
-            returnHome: 'Ana Sayfaya Dön',
-            cardHolder: 'Kart Üzerindeki İsim Soyisim',
-            cardNumber: 'Kart Numarası',
-            expiryDate: 'Son Kullanma Tarihi',
-            cvv: 'CVV Güvenlik Kodu',
-            officePaymentSelected: 'Ofiste Ödeme Seçildi',
-            bankName: 'Ziraat Bankası',
-            important: 'Önemli:',
-            contract: 'Mesafeli Satış Sözleşmesi'
-        }
-      },
-      footer: { 
-        rights: 'Tüm hakları saklıdır.', 
-        support: '7/24 Canlı Destek', 
-        corporate: 'Kurumsal', 
-        legal: 'Yasal', 
-        contactUs: 'Bize Ulaşın', 
-        contactText: 'Sorularınız mı var? 7/24 destek hattımız hizmetinizde.', 
-        designed: 'Designed with ❤️ in Yüksekova',
-        links: {
-            kvkk: 'KVKK Aydınlatma Metni',
-            privacy: 'Gizlilik Politikası',
-            cookies: 'Çerez Politikası',
-            terms: 'Kiralama Koşulları',
-            faq: 'Sıkça Sorulan Sorular'
-        }
+        status: { forSale: 'Satılık' },
+        searchPlaceholder: 'Marka, model veya başlık ara...',
+        filterBtn: 'Filtrele',
+        filterTitle: 'Detaylı Filtreleme',
+        clear: 'Temizle',
+        brand: 'Marka',
+        allBrands: 'Tüm Markalar',
+        year: 'Yıl',
+        allYears: 'Tüm Yıllar',
+        km: 'Kilometre',
+        all: 'Tümü',
+        condition: 'Durum',
+        new: 'Sıfır (0 km)',
+        used: 'İkinci El',
+        damageStatus: 'Hasar Durumu',
+        clean: 'Hatasız / Boyasız',
+        damaged: 'Hasar Kayıtlı',
+        color: 'Renk',
+        allColors: 'Tüm Renkler',
+        showResults: 'Sonuçları Göster',
+        sortBtn: 'Sırala',
+        sortDefault: 'Varsayılan',
+        sortPriceAsc: 'Fiyat: Artan',
+        sortPriceDesc: 'Fiyat: Azalan',
+        sortYearDesc: 'Yıl: Yeniden Eskiye',
+        sortYearAsc: 'Yıl: Eskiden Yeniye'
       }
     },
     EN: {
-      nav: { home: 'Home', fleet: 'Fleet', sales: 'Car Sales', about: 'About Us', contact: 'Contact', blog: 'Blog' },
+      nav: { home: 'Home', fleet: 'Fleet', sales: 'Car Sales', tours: 'Tours', earn: 'Earn with Us', about: 'About Us', contact: 'Contact', blog: 'Blog', corporate: 'Corporate' },
       hero: { title: 'Leading Car Rental in Yüksekova', subtitle: 'Safe, comfortable and premium car rental experience.', cta: 'Rent Now' },
-      buttons: { close: 'Close', book: 'Book Now', details: 'Details', call: 'Call Now', send: 'Send', rent: 'Rent Now', rentDriver: 'Rent with Driver', notAvailable: 'Not Available', remove: 'Remove', apply: 'Submit Application', viewAll: 'View All', viewTours: 'View All Tours', backHome: 'Back to Home', complete: 'Complete', pay: 'Pay & Finish' },
+      buttons: { back: 'Go Back', close: 'Close', book: 'Book Now', details: 'Details', call: 'Call Now', send: 'Send', rent: 'Rent Now', rentDriver: 'Rent with Driver', notAvailable: 'Not Available', remove: 'Remove', apply: 'Submit Application', viewAll: 'View All', viewTours: 'View All Tours', backHome: 'Back to Home', complete: 'Complete', pay: 'Pay & Finish', appointment: 'Book Appointment' },
 
       filters: { all: 'All', suv: 'SUV', pickup: 'Pickup', sedan: 'Sedan', hatchback: 'Economy', luxury: 'Luxury', driverActive: 'Chauffeur Service Active', rented: 'RENTED' },
       sort: { label: 'Sort', default: 'Recommended', priceAsc: 'Price: Low to High', priceDesc: 'Price: High to Low' },
-      car: { day: 'day', transmission: 'Transmission', seats: 'Seats', fuel: 'Fuel', auto: 'Automatic', manual: 'Manual', diesel: 'Diesel', gasoline: 'Gasoline', hybrid: 'Hybrid', electric: 'Electric', year: 'Model', km: 'KM' },
+      car: { day: 'day', transmission: 'Transmission', seats: 'Seats', fuel: 'Fuel', auto: 'Automatic', manual: 'Manual', diesel: 'Diesel', gasoline: 'Gasoline', hybrid: 'Hybrid', electric: 'Electric', year: 'Model', km: 'KM', overview: 'Overview', availability: 'Availability', available: 'Available', similarCars: 'Similar Cars', description: 'Description', features: 'Features', insured: 'Insured', viewersCount: 'people viewing', expertReport: 'Expert Report', lastCar: 'Last Car', buyNow: 'Buy Now', details: 'Details', rentNow: 'Rent Now', 
+        opportunity: 'Opportunity Listing',
+        purchaseRequest: 'Purchase Request',
+        rentalRequest: 'Rental Request',
+        expertiseReady: 'Inspection Ready', tradeAvailable: 'Trade-in Available',
+        dontMiss: 'DON\'T MISS THIS OPPORTUNITY!',
+        whatsappMsg: 'Hello, I would like to get information about your {brand} {model} ({year}) vehicle. Link: {url}', inquiryMeet: 'APPOINTMENT REQUEST: I would like to see and inspect the vehicle on site.', inquiryInfo: 'PURCHASE REQUEST: I would like to discuss the vehicle in detail.', withDriverLabel: '(With Driver)', deposit: 'Deposit', minAge: 'Min. Age', minLicenseYears: 'License Years', years: 'Years', priceDropped: 'Price dropped', todayViewers: '{n} people looked today', daysLeft: 'Last {n} days', engineVolume: 'Engine Volume', enginePower: 'Engine Power', drivetrain: 'Drivetrain', color: 'Color', warranty: 'Warranty', damageStatus: 'Damage Status', paintedParts: 'Painted Parts', noPaintedParts: 'No Painted Parts', noReplacedParts: 'No Replaced Parts', noDamageRecord: 'No Damage Record', hasWarranty: 'Has Warranty', discount: 'Discount', paintlessReplaceFree: 'Paintless / No Replacement', accidentFree: 'Accident Free', inspectNow: 'Inspect Now', sendSaleRequest: 'Send Sale Request', popularListing: 'Popular Listing' },
       chat: { title: 'Live Support', subtitle: 'Alperler Assistant', placeholder: 'Type something...', welcome: 'Hello! Welcome to Alperler Rent A Car. How can I help you?' },
+      fleet: {
+          subtitle: 'Powerful and comfortable vehicles suitable for Yüksekova roads.',
+          searchPlaceholder: 'Search Car (Brand, Model...)',
+          filterType: 'Vehicle Type Filters',
+          filterBtn: 'Filter',
+          sortBtn: 'Sort'
+      },
       home: {
         booking: {
             title: 'Rent a Car Now',
             type: 'SERVICE TYPE',
             types: { individual: 'Individual Rental', driver: 'Rental with Driver' },
+            duration: 'Rental Duration',
+            durations: { 
+                hourly_6: 'Hourly (Min 6 Hours)', 
+                hourly_12: 'Hourly (12 Hours)', 
+                daily: 'Daily (1-29 Days)', 
+                monthly: 'Monthly (30+ Days)', 
+                longterm: 'Long Term (6+ Months)' 
+            },
             pickup: 'PICKUP LOCATION',
             locations: { center: 'Yüksekova Center', airport: 'Yüksekova Airport', bus: 'Yüksekova Bus Terminal' },
             startDate: 'PICKUP DATE',
@@ -270,6 +466,7 @@ export class UiService {
             badge: 'Car Sales Division',
             title: 'Own a Reliable Car',
             description: 'Get your dream car with our expertise-guaranteed, well-maintained second-hand vehicles. Trade-in options and suitable payment plans await you.',
+            viewAll: 'View All Second Hand Cars',
             cta: 'View Cars for Sale',
             stats: { expert: 'Expertise Guarantee', months: 'Months', warranty: 'Mechanical Warranty', trade: 'Trade-in', value: 'Value Purchase', credit: 'Credit', finance: 'Fast Finance' }
         },
@@ -296,6 +493,7 @@ export class UiService {
                 success: { title: 'Application Received!', message: 'Our expert team will examine your vehicle and get back to you as soon as possible.' },
                 name: 'Name Surname',
                 phone: 'Phone',
+                email: 'Email Address',
                 car: 'Car Brand/Model',
                 year: 'Model Year',
                 km: 'Car Mileage (KM)',
@@ -304,7 +502,14 @@ export class UiService {
                 maxFiles: '(Max 10 Files)',
                 notes: 'Additional Notes',
                 notesPlaceholder: 'What you want to add about the vehicle...',
-                submit: 'Submit Application'
+                submit: 'Submit Application',
+                errors: {
+                    name: 'Please enter your full name.',
+                    phone: 'Please enter a valid phone number.',
+                    email: 'Please enter a valid email address.',
+                    car: 'Please enter car brand and model.',
+                    km: 'Please enter a valid mileage.'
+                }
             }
         },
         tours: {
@@ -328,54 +533,46 @@ export class UiService {
         expert: 'Expertise / Condition',
         appointment: 'Book Appointment',
         buy: 'Buy Now',
-        status: { forSale: 'For Sale' }
+        status: { forSale: 'For Sale' },
+        searchPlaceholder: 'Search brand, model or title...',
+        filterBtn: 'Filter',
+        filterTitle: 'Detailed Filtering',
+        clear: 'Clear',
+        brand: 'Brand',
+        allBrands: 'All Brands',
+        year: 'Year',
+        allYears: 'All Years',
+        km: 'Mileage',
+        all: 'All',
+        condition: 'Condition',
+        new: 'New (0 km)',
+        used: 'Used',
+        damageStatus: 'Damage Status',
+        clean: 'Damage Free / No Paint',
+        damaged: 'Has Damage Record',
+        color: 'Color',
+        allColors: 'All Colors',
+        showResults: 'Show Results',
+        sortBtn: 'Sort',
+        sortDefault: 'Default',
+        sortPriceAsc: 'Price: Low to High',
+        sortPriceDesc: 'Price: High to Low',
+        sortYearDesc: 'Year: New to Old',
+        sortYearAsc: 'Year: Old to New'
       },
-      contact: {
-        title: 'Contact',
-        subtitle: 'We are with you 24/7',
-        infoTitle: 'Contact Information',
-        formTitle: 'Contact Us',
-        formSubtitle: 'Fill out the form for your questions or requests.',
-        name: 'Name', surname: 'Surname', phone: 'Phone', email: 'E-Mail', message: 'Message',
-        successTitle: 'Transaction Successfully Received!',
-        successText: 'We have received your request. We will get back to you as soon as possible.',
-        summary: 'Order Summary',
-        personalInfo: 'Personal Information',
-        paymentMethod: 'Payment Method',
-        creditCard: 'Credit Card', office: 'Pay at Office', eft: 'Bank Transfer / EFT',
-        total: 'Total Amount',
-        days: 'Days',
-        checkout: {
-            cancel: 'Cancel & Return',
-            securePayment: 'SECURE PAYMENT & RESERVATION',
-            createRequest: 'CREATE REQUEST',
-            rentalService: 'Rental Service',
-            tourService: 'Tour Service',
-            saleRequest: 'Purchase Request',
-            pickupDate: 'Pickup Date',
-            returnDate: 'Return Date',
-            dailyPrice: 'Daily Price',
-            duration: 'Duration',
-            estimatedCost: 'Estimated Cost',
-            reservationCode: 'Reservation Code',
-            returnHome: 'Return to Home',
-            cardHolder: 'Card Holder Name',
-            cardNumber: 'Card Number',
-            expiryDate: 'Expiry Date',
-            cvv: 'CVV Security Code',
-            officePaymentSelected: 'Pay at Office Selected',
-            bankName: 'Ziraat Bank',
-            important: 'Important:',
-            contract: 'Distance Sales Agreement'
-        }
-      },
-      footer: { 
-        rights: 'All rights reserved.', 
-        support: '24/7 Live Support', 
-        corporate: 'Corporate', 
-        legal: 'Legal', 
-        contactUs: 'Contact Us', 
-        contactText: 'Questions? Our 24/7 support line is at your service.', 
+      footer: {
+        rights: 'All Rights Reserved.',
+        support: '24/7 Live Support',
+        corporate: 'Corporate',
+        legal: 'Legal',
+        newsletter: 'Newsletter Subscription',
+        newsletterSub: 'Subscribe for free to be informed about campaigns and new vehicles.',
+        emailPlaceholder: 'Your email address',
+        subscribeBtn: 'Subscribe for Free',
+        subscribeSuccess: 'Congratulations! You have successfully subscribed to our newsletter.',
+        contactUs: 'Contact Us',
+        contactBtn: 'Get in Touch',
+        contactText: 'Questions? Our 24/7 support hotline is at your service.',
         designed: 'Designed with ❤️ in Yüksekova',
         links: {
             kvkk: 'KVKK Text',
@@ -384,12 +581,120 @@ export class UiService {
             terms: 'Rental Terms',
             faq: 'FAQ'
         }
+      },
+      about: {
+        title: 'About Us',
+        story: 'Our Corporate Story',
+        teamTitle: 'Management and Operation',
+        teamSubtitle: 'Professional service, family warmth.'
+      },
+      contact: {
+        title: 'Contact',
+        subtitle: 'We are with you 24/7',
+        infoTitle: 'Contact Information',
+        formTitle: 'Contact Us',
+        formSubtitle: 'Fill out the form for your questions or requests.',
+        name: 'Name',
+        surname: 'Surname',
+        phone: 'Phone',
+        email: 'Email Address',
+        message: 'Your Message',
+        send: 'Send',
+        checkout: {
+          cancel: 'Cancel and Return to Site',
+          securePayment: 'SECURE PAYMENT & BOOKING',
+          requestCreation: 'REQUEST CREATION',
+          summary: 'Order Summary',
+          rentalService: 'Rental Service',
+          tourService: 'Tour Service',
+          saleRequest: 'Purchase Request',
+          rentalType: 'Rental Type',
+          withDriver: 'Chauffeur Service',
+          pickupDate: 'Pickup Date',
+          returnDate: 'Return Date',
+          dailyPrice: 'Daily Price',
+          duration: 'Duration',
+          total: 'Total Amount',
+          estimatedPrice: 'Estimated Price',
+          successTitle: 'Your Transaction Was Successfully Received!',
+          bookingCode: 'Your Booking Code:',
+          goHome: 'Return to Home Page',
+          personalInfo: 'Personal Information',
+          paymentMethod: 'Payment Method',
+          creditCard: 'Credit Card',
+          payAtOffice: 'Pay at Office',
+          eft: 'Bank Transfer / EFT',
+          securePaymentBadge: '256-Bit SSL Secure Payment',
+          cardName: 'Name on Card',
+          cardNumber: 'Card Number',
+          expiryDate: 'Expiry Date',
+          month: 'Month',
+          year: 'Year',
+          cvv: 'CVV Security Code',
+          officeSelected: 'Pay at Office Selected',
+          officeDesc: 'Your reservation will be created. You can pay by cash or credit card upon vehicle delivery.',
+          bankName: 'Ziraat Bank',
+          receiver: 'RECEIVER: ALPERLER OTO KIRALAMA LTD. STI.',
+          eftNotice: 'Important: Please write NAME SURNAME in the description. Send the receipt to our WhatsApp line after the transaction.',
+          connectingBank: 'Connecting to Bank...',
+          processing: 'Processing...',
+          confirmAndFinish: 'Confirm and Finish Payment',
+          completeBooking: 'Complete Booking',
+          sendRequest: 'Send Request',
+          termsNotice: 'By clicking "Complete", you accept the Distance Selling Agreement.',
+          successRentalCC: 'Your payment has been securely received. We are waiting for you at our office for vehicle delivery.',
+          successRentalEFT: 'Your transfer notification has been received. Please send the payment receipt to our WhatsApp line at 0537 959 48 51.',
+          successRentalOffice: 'Your reservation has been created. You can make the payment at the office during vehicle delivery.',
+          successOther: 'Your request has reached us. We will get back to you from {phone} as soon as possible.',
+          formSuccess: 'Your message has been delivered! Thank you.'
+        }
+      },
+      feedback: {
+        title: 'Send Feedback',
+        subtitle: 'Your feedback is valuable to us.',
+        category: 'Category',
+        rating: 'Rating',
+        message: 'Message',
+        placeholder: 'Share your experience...',
+        submit: 'Send',
+        success: 'Thank you for your feedback!',
+        categories: {
+          BUG: 'Bug Report',
+          FEATURE: 'Feature Request',
+          GENERAL: 'General Feedback',
+          CONTENT: 'Content Error',
+          OTHER: 'Other'
+        },
+        analysis: {
+          title: 'Feedback Analysis (AI)',
+          btn: 'Analyze',
+          loading: 'Analyzing...',
+          empty: 'No data to analyze yet.'
+        },
+        hideAnalysis: 'Hide Analysis',
+        aiAnalysis: 'Admin Analysis (AI)',
+        totalFeedback: 'Total Feedback:',
+        successSubtitle: 'Your feedback helps us improve our service quality.'
+      },
+      common: {
+        close: 'Close',
+        favorites: 'Favorites',
+        menuToggle: 'Open/Close Menu',
+        addToFav: 'Add to Favorites',
+        removeFromFav: 'Remove from Favorites'
       }
     },
     DE: {
-      nav: { home: 'Startseite', fleet: 'Flotte', sales: 'Autoverkauf', about: 'Über uns', contact: 'Kontakt', blog: 'Blog' },
+      nav: { home: 'Startseite', fleet: 'Flotte', sales: 'Autoverkauf', about: 'Über uns', contact: 'Kontakt', blog: 'Blog', corporate: 'Unternehmen' },
       hero: { title: 'Führende Autovermietung in Yüksekova', subtitle: 'Sicheres, komfortables und erstklassiges Mietwagenerlebnis.', cta: 'Jetzt Mieten' },
-      buttons: { close: 'Schließen', book: 'Jetzt Buchen', details: 'Details', call: 'Jetzt Anrufen', send: 'Senden', rent: 'Jetzt Mieten', rentDriver: 'Mieten mit Fahrer', notAvailable: 'Nicht Verfügbar', remove: 'Entfernen', apply: 'Bewerbung Senden', viewAll: 'Alle Anzeigen', viewTours: 'Alle Touren Anzeigen', backHome: 'Zurück zur Startseite', complete: 'Abschließen', pay: 'Bezahlen & Beenden' },
+      buttons: { back: 'Zurück', close: 'Schließen', book: 'Jetzt Buchen', details: 'Details', call: 'Jetzt Anrufen', send: 'Senden', rent: 'Jetzt Mieten', rentDriver: 'Mieten mit Fahrer', notAvailable: 'Nicht Verfügbar', remove: 'Entfernen', apply: 'Bewerbung Senden', viewAll: 'Alle Anzeigen', viewTours: 'Alle Touren Anzeigen', backHome: 'Zurück zur Startseite', complete: 'Abschließen', pay: 'Bezahlen & Beenden', appointment: 'Termin vereinbaren' },
+      common: {
+        close: 'Schließen',
+        favorites: 'Favoriten',
+        menuToggle: 'Menü öffnen/schließen',
+        addToFav: 'Zu Favoriten hinzufügen',
+        removeFromFav: 'Aus Favoriten entfernen'
+      },
 
       filters: { all: 'Alle', suv: 'SUV', pickup: 'Pickup', sedan: 'Limousine', hatchback: 'Kleinwagen', luxury: 'Luxus', driverActive: 'Chauffeurservice Aktiv', rented: 'VERMIETET' },
       sort: { label: 'Sortieren', default: 'Empfohlen', priceAsc: 'Preis: Aufsteigend', priceDesc: 'Preis: Absteigend' },
@@ -420,6 +725,7 @@ export class UiService {
             title: 'Besitzen Sie ein zuverlässiges Auto',
             description: 'Holen Sie sich Ihr Traumauto mit unseren geprüften Gebrauchtwagen. Inzahlungnahme und passende Zahlungspläne warten auf Sie.',
             cta: 'Autos zum Verkauf',
+            viewAll: 'Alle Gebrauchtwagen anzeigen',
             stats: { expert: 'Gutachten Garantie', months: 'Monate', warranty: 'Mechanische Garantie', trade: 'Inzahlungnahme', value: 'Wertkauf', credit: 'Kredit', finance: 'Schnelle Finanzierung' }
         },
         whyUs: {
@@ -536,9 +842,16 @@ export class UiService {
       }
     },
     FR: {
-      nav: { home: 'Accueil', fleet: 'Flotte', sales: 'Vente Auto', about: 'À propos', contact: 'Contact', blog: 'Blog' },
+      nav: { home: 'Accueil', fleet: 'Flotte', sales: 'Vente Auto', about: 'À propos', contact: 'Contact', blog: 'Blog', corporate: 'Entreprise' },
       hero: { title: 'Location de voitures leader à Yüksekova', subtitle: 'Expérience de location de voiture sûre, confortable et premium.', cta: 'Louer Maintenant' },
-      buttons: { close: 'Fermer', book: 'Réserver', details: 'Détails', call: 'Appeler', send: 'Envoyer', rent: 'Louer', rentDriver: 'Louer avec Chauffeur', notAvailable: 'Indisponible', remove: 'Supprimer', apply: 'Soumettre', viewAll: 'Voir Tout', viewTours: 'Voir Tours', backHome: 'Retour Accueil', complete: 'Terminer', pay: 'Payer & Finir' },
+      buttons: { back: 'Retour', close: 'Fermer', book: 'Réserver', details: 'Détails', call: 'Appeler', send: 'Envoyer', rent: 'Louer', rentDriver: 'Louer avec Chauffeur', notAvailable: 'Indisponible', remove: 'Supprimer', apply: 'Soumettre', viewAll: 'Voir Tout', viewTours: 'Voir Tours', backHome: 'Retour Accueil', complete: 'Terminer', pay: 'Payer & Finir', appointment: 'Prendre rendez-vous' },
+      common: {
+        close: 'Fermer',
+        favorites: 'Favoris',
+        menuToggle: 'Ouvrir/Fermer le Menu',
+        addToFav: 'Ajouter aux Favoris',
+        removeFromFav: 'Supprimer des Favoris'
+      },
 
       filters: { all: 'Tous', suv: 'SUV', pickup: 'Pickup', sedan: 'Berline', hatchback: 'Économique', luxury: 'Luxe', driverActive: 'Service Chauffeur Actif', rented: 'LOUÉ' },
       sort: { label: 'Trier', default: 'Recommandé', priceAsc: 'Prix: Croissant', priceDesc: 'Prix: Décroissant' },
@@ -569,6 +882,7 @@ export class UiService {
             title: 'Possédez une Voiture Fiable',
             description: 'Obtenez la voiture de vos rêves avec nos véhicules d\'occasion garantis et bien entretenus. Options de reprise et plans de paiement adaptés vous attendent.',
             cta: 'Voir les Voitures',
+            viewAll: 'Voir tous les véhicules d\'occasion',
             stats: { expert: 'Garantie Expertise', months: 'Mois', warranty: 'Garantie Mécanique', trade: 'Reprise', value: 'Achat Valeur', credit: 'Crédit', finance: 'Finance Rapide' }
         },
         whyUs: {
@@ -675,6 +989,7 @@ export class UiService {
         contactUs: 'Contactez-nous', 
         contactText: 'Des questions ? Notre ligne de support 24/7 est à votre service.', 
         designed: 'Conçu avec ❤️ à Yüksekova',
+        footerText: 'Votre compagnon de voyage avec un service de location de voiture fiable à Yüksekova. Service premium, voyage en toute sécurité.',
         links: {
             kvkk: 'Texte KVKK',
             privacy: 'Politique Confidentialité',
@@ -685,9 +1000,16 @@ export class UiService {
       }
     },
     ES: {
-      nav: { home: 'Inicio', fleet: 'Flota', sales: 'Venta de Autos', about: 'Nosotros', contact: 'Contacto', blog: 'Blog' },
+      nav: { home: 'Inicio', fleet: 'Flota', sales: 'Venta de Autos', about: 'Nosotros', contact: 'Contacto', blog: 'Blog', corporate: 'Corporativo' },
       hero: { title: 'Alquiler de coches líder en Yüksekova', subtitle: 'Experiencia de alquiler de coches segura, cómoda y premium.', cta: 'Alquilar Ahora' },
-      buttons: { close: 'Cerrar', book: 'Reservar', details: 'Detalles', call: 'Llamar', send: 'Enviar', rent: 'Alquilar', rentDriver: 'Alquilar con Conductor', notAvailable: 'No Disponible', remove: 'Eliminar', apply: 'Enviar Solicitud', viewAll: 'Ver Todo', viewTours: 'Ver Tours', backHome: 'Volver al Inicio', complete: 'Completar', pay: 'Pagar y Terminar' },
+      buttons: { back: 'Volver', close: 'Cerrar', book: 'Reservar', details: 'Detalles', call: 'Llamar', send: 'Enviar', rent: 'Alquilar', rentDriver: 'Alquilar con Conductor', notAvailable: 'No Disponible', remove: 'Eliminar', apply: 'Enviar Solicitud', viewAll: 'Ver Todo', viewTours: 'Ver Tours', backHome: 'Volver al Inicio', complete: 'Completar', pay: 'Pagar y Terminar', appointment: 'Pedir Cita' },
+      common: {
+        close: 'Cerrar',
+        favorites: 'Favoritos',
+        menuToggle: 'Abrir/Cerrar Menú',
+        addToFav: 'Añadir a Favoritos',
+        removeFromFav: 'Eliminar de Favoritos'
+      },
 
       filters: { all: 'Todos', suv: 'SUV', pickup: 'Pickup', sedan: 'Sedán', hatchback: 'Económico', luxury: 'Lujo', driverActive: 'Servicio de Chófer Activo', rented: 'ALQUILADO' },
       sort: { label: 'Ordenar', default: 'Recomendado', priceAsc: 'Precio: Bajo a Alto', priceDesc: 'Precio: Alto a Bajo' },
@@ -718,6 +1040,7 @@ export class UiService {
             title: 'Posee un Auto Confiable',
             description: 'Obtenga el auto de sus sueños con nuestros vehículos usados garantizados y bien mantenidos. Opciones de intercambio y planes de pago adecuados le esperan.',
             cta: 'Ver Autos en Venta',
+            viewAll: 'Ver Todos los Vehículos de Ocasión',
             stats: { expert: 'Garantía Peritaje', months: 'Meses', warranty: 'Garantía Mecánica', trade: 'Intercambio', value: 'Compra Valor', credit: 'Crédito', finance: 'Financiación Rápida' }
         },
         whyUs: {
@@ -834,9 +1157,16 @@ export class UiService {
       }
     },
     RU: {
-      nav: { home: 'Главная', fleet: 'Автопарк', sales: 'Продажа', about: 'О нас', contact: 'Контакты', blog: 'Блог' },
+      nav: { home: 'Главная', fleet: 'Автопарк', sales: 'Продажа', about: 'О нас', contact: 'Контакты', blog: 'Блог', corporate: 'Корпоративный' },
       hero: { title: 'Лидер проката авто в Юксекова', subtitle: 'Безопасный, комфортный и премиальный опыт аренды.', cta: 'Арендовать' },
-      buttons: { close: 'Закрыть', book: 'Забронировать', details: 'Детали', call: 'Позвонить', send: 'Отправить', rent: 'Арендовать', rentDriver: 'Аренда с водителем', notAvailable: 'Недоступно', remove: 'Удалить', apply: 'Отправить заявку', viewAll: 'Смотреть все', viewTours: 'Смотреть туры', backHome: 'На главную', complete: 'Завершить', pay: 'Оплатить' },
+      buttons: { back: 'Назад', close: 'Закрыть', book: 'Забронировать', details: 'Детали', call: 'Позвонить', send: 'Отправить', rent: 'Арендовать', rentDriver: 'Аренда с водителем', notAvailable: 'Недоступно', remove: 'Удалить', apply: 'Отправить заявку', viewAll: 'Смотреть все', viewTours: 'Смотреть туры', backHome: 'На главную', complete: 'Завершить', pay: 'Оплатить', appointment: 'Записаться' },
+      common: {
+        close: 'Закрыть',
+        favorites: 'Избранное',
+        menuToggle: 'Открыть/Закрыть меню',
+        addToFav: 'Добавить в избранное',
+        removeFromFav: 'Удалить из избранного'
+      },
 
       filters: { all: 'Все', suv: 'Внедорожник', pickup: 'Пикап', sedan: 'Седан', hatchback: 'Эконом', luxury: 'Люкс', driverActive: 'Услуга водителя активна', rented: 'АРЕНДОВАНО' },
       sort: { label: 'Сортировка', default: 'Рекомендуемые', priceAsc: 'Цена: по возрастанию', priceDesc: 'Цена: по убыванию' },
@@ -867,6 +1197,7 @@ export class UiService {
             title: 'Купите надежный автомобиль',
             description: 'Получите автомобиль мечты с нашими проверенными б/у авто с гарантией. Трейд-ин и удобные планы оплаты ждут вас.',
             cta: 'Авто на продажу',
+            viewAll: 'Посмотреть все подержанные автомобили',
             stats: { expert: 'Гарантия экспертизы', months: 'Месяцев', warranty: 'Механическая гарантия', trade: 'Трейд-ин', value: 'Выкуп по стоимости', credit: 'Кредит', finance: 'Быстрое финансирование' }
         },
         whyUs: {
@@ -983,9 +1314,16 @@ export class UiService {
       }
     },
     ZH: {
-      nav: { home: '首页', fleet: '车队', sales: '汽车销售', about: '关于我们', contact: '联系方式', blog: '博客' },
+      nav: { home: '首页', fleet: '车队', sales: '汽车销售', about: '关于我们', contact: '联系方式', blog: '博客', corporate: '企业' },
       hero: { title: 'Yüksekova 领先的汽车租赁', subtitle: '安全、舒适和优质的租车体验。', cta: '立即租赁' },
-      buttons: { close: '关闭', book: '立即预订', details: '详情', call: '立即致电', send: '发送', rent: '立即租赁', rentDriver: '带司机租赁', notAvailable: '不可用', remove: '移除', apply: '提交申请', viewAll: '查看全部', viewTours: '查看所有旅游', backHome: '返回首页', complete: '完成', pay: '支付并完成' },
+      buttons: { back: '返回', close: '关闭', book: '立即预订', details: '详情', call: '立即致电', send: '发送', rent: '立即租赁', rentDriver: '带司机租赁', notAvailable: '不可用', remove: '移除', apply: '提交申请', viewAll: '查看全部', viewTours: '查看所有旅游', backHome: '返回首页', complete: '完成', pay: '支付并完成', appointment: '预约' },
+      common: {
+        close: '关闭',
+        favorites: '收藏夹',
+        menuToggle: '打开/关闭菜单',
+        addToFav: '添加到收藏夹',
+        removeFromFav: '从收藏夹移除'
+      },
 
       filters: { all: '全部', suv: 'SUV', pickup: '皮卡', sedan: '轿车', hatchback: '经济型', luxury: '豪华', driverActive: '司机服务已激活', rented: '已租' },
       sort: { label: '排序', default: '推荐', priceAsc: '价格：从低到高', priceDesc: '价格：从高到低' },
@@ -1016,6 +1354,7 @@ export class UiService {
             title: '拥有可靠的汽车',
             description: '通过我们有保障、维护良好的二手车，获得您梦想中的汽车。以旧换新和合适的付款计划等着您。',
             cta: '查看待售车辆',
+            viewAll: '查看所有二手车',
             stats: { expert: '专业保证', months: '月', warranty: '机械保修', trade: '以旧换新', value: '保值收购', credit: '信用', finance: '快速融资' }
         },
         whyUs: {
@@ -1132,9 +1471,16 @@ export class UiService {
       }
     },
     AR: {
-      nav: { home: 'الرئيسية', fleet: 'الأسطول', sales: 'مبيعات السيارات', about: 'من نحن', contact: 'اتصل بنا', blog: 'مدونة' },
+      nav: { home: 'الرئيسية', fleet: 'الأسطول', sales: 'مبيعات السيارات', about: 'من نحن', contact: 'اتصل بنا', blog: 'مدونة', corporate: 'شركات' },
       hero: { title: 'تأجير السيارات الرائد في يوكسكوفا', subtitle: 'تجربة تأجير سيارات آمنة ومريحة ومميزة.', cta: 'استأجر الآن' },
-      buttons: { close: 'إغلاق', book: 'احجز الآن', details: 'التفاصيل', call: 'اتصل الآن', send: 'إرسال', rent: 'استأجر الآن', rentDriver: 'تأجير مع سائق', notAvailable: 'غير متوفر', remove: 'إزالة', apply: 'تقديم الطلب', viewAll: 'عرض الكل', viewTours: 'عرض جميع الجولات', backHome: 'العودة للرئيسية', complete: 'إكمال', pay: 'دفع وإنهاء' },
+      buttons: { back: 'عودة', close: 'إغلاق', book: 'احجز الآن', details: 'التفاصيل', call: 'اتصل الآن', send: 'إرسال', rent: 'استأجر الآن', rentDriver: 'تأجير مع سائق', notAvailable: 'غير متوفر', remove: 'إزالة', apply: 'تقديم الطلب', viewAll: 'عرض الكل', viewTours: 'عرض جميع الجولات', backHome: 'العودة للرئيسية', complete: 'إكمال', pay: 'دفع وإنهاء', appointment: 'حجز موعد' },
+      common: {
+        close: 'إغلاق',
+        favorites: 'المفضلة',
+        menuToggle: 'فتح/إغلاق القائمة',
+        addToFav: 'إضافة إلى المفضلة',
+        removeFromFav: 'إزالة من المفضلة'
+      },
       footer: { 
         rights: 'جميع الحقوق محفوظة.', 
         support: 'دعم مباشر 24/7', 
@@ -1180,6 +1526,7 @@ export class UiService {
             title: 'امتلك سيارة موثوقة',
             description: 'احصل على سيارة أحلامك مع سياراتنا المستعملة المضمونة والمصانة جيدًا. خيارات الاستبدال وخطط الدفع المناسبة بانتظارك.',
             cta: 'عرض السيارات للبيع',
+            viewAll: 'عرض جميع السيارات المستعملة',
             stats: { expert: 'ضمان الخبرة', months: 'أشهر', warranty: 'ضمان ميكانيكي', trade: 'استبدال', value: 'شراء بالقيمة', credit: 'ائتمان', finance: 'تمويل سريع' }
         },
         whyUs: {

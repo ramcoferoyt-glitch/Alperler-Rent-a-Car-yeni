@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit } from '@angular/core';
+import { RouterOutlet, Router } from '@angular/router';
 import { ThemeService } from './services/theme.service';
 
 @Component({
@@ -8,6 +8,11 @@ import { ThemeService } from './services/theme.service';
   imports: [RouterOutlet],
   template: `<router-outlet></router-outlet>`
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   themeService = inject(ThemeService);
+  router = inject(Router);
+
+  ngOnInit() {
+    // Initialization logic if needed
+  }
 }
